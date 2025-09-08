@@ -12,31 +12,29 @@ CREATE TABLE Utilisateur(
 
 CREATE TABLE Categorie(
     id_categorie SERIAL PRIMARY KEY,
-    intitule VARCHAR(255)
+    intitule VARCHAR(255),
+    etat INTEGER
 );
 
 CREATE TABLE Societe(
     id_societe SERIAL PRIMARY KEY,
     id_utilisateur INTEGER,
     nom VARCHAR(255),
-    FOREIGN KEY(id_utilisateur) REFERENCES Utilisateur(id_utilisateur)
-);
-
-CREATE TABLE Societe_Description(
-    id_description SERIAL PRIMARY KEY,
-    id_societe INTEGER,
     titre VARCHAR(255),
     histoire TEXT,
     photo BYTEA,
     video BYTEA,
-    FOREIGN KEY (id_societe) REFERENCES Societe(id_societe)
+    etat INTEGER,
+    FOREIGN KEY(id_utilisateur) REFERENCES Utilisateur(id_utilisateur)
 );
+
 
 CREATE TABLE Produit(
     id_produit SERIAL PRIMARY KEY,
     id_categorie INTEGER,
     id_societe INTEGER,
     intitule VARCHAR(255),
+    etat INTEGER,
     FOREIGN KEY (id_categorie) REFERENCES Categorie(id_categorie),
     FOREIGN KEY (id_societe) REFERENCES Societe(id_societe)
 );
