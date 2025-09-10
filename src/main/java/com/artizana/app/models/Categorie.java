@@ -58,7 +58,7 @@ public class Categorie {
                 con=Connect.connectDB();
                 valid=false;
             }
-            String sql = "SELECT * FROM categorie WHERE id_utilisateur='"+idCategorie+"'";
+            String sql = "SELECT * FROM categorie WHERE id_categorie='"+idCategorie+"'";
             state = con.createStatement();
             System.out.println(sql);
             result = state.executeQuery(sql);

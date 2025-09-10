@@ -15,7 +15,7 @@ import com.artizana.app.models.Produit;
 
 @CrossOrigin(origins="*", allowedHeaders="*")
 @RestController
-@RequestMapping("api/project")
+@RequestMapping("api/web")
 public class ProduitController {
 
     @GetMapping("/produits")
