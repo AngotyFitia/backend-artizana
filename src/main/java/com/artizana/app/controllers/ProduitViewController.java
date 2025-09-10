@@ -1,4 +1,5 @@
 package com.artizana.app.controllers;
+import org.springframework.web.servlet.ModelAndView;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,17 +21,19 @@ public class ProduitViewController {
     public String afficherFormulaire() {
         return "ajout-produit"; 
     }
-    
+
     @GetMapping("/produits")
-    public String afficherProduits(HttpServletRequest request) throws Exception {
+    public ModelAndView afficherProduits() throws Exception {
         Produit produit = new Produit();
         Produit[] liste = produit.getAll(null);
-        request.setAttribute("produits", liste);
-        return "liste-produits"; 
+
+        ModelAndView mav = new ModelAndView("liste-produits");
+        mav.addObject("produits", liste);
+        return mav;
     }
 
     @PostMapping("/produit-ajout")
-    public String traiterFormulaire(HttpServletRequest request) throws Exception {
+    public ModelAndView traiterFormulaire(HttpServletRequest request) throws Exception {
         String intitule = request.getParameter("intitule");
 
         Produit produit = new Produit();
@@ -39,14 +42,16 @@ public class ProduitViewController {
         produit.setCategorie(categorie);
 
         Societe societe = new Societe();
-        societe.setIdSociete(8);
+        societe.setIdSociete(3);
 
         produit.setSociete(societe);
         produit.setIntitule(intitule);
-        produit.setEtat(1); 
-        produit.insert(null); 
-        return "redirect:/api/mobile/produits"; 
+        produit.setEtat(1);
+        produit.insert(null);
+
+        return new ModelAndView("redirect:/api/mobile/produits");
     }
+
 }
 
 
