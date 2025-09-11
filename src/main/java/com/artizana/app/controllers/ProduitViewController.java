@@ -4,6 +4,9 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 import com.artizana.app.models.Categorie;
 import com.artizana.app.models.Societe;
@@ -51,6 +54,57 @@ public class ProduitViewController {
 
         return new ModelAndView("redirect:/api/mobile/produits");
     }
+
+    @GetMapping("/societes")
+    public ModelAndView getListe()throws Exception{
+        Societe societe = new Societe();
+        System.out.println("aaa");
+        Societe[] liste = societe.getAll(null);
+
+        ModelAndView mav = new ModelAndView("liste-societe");
+        mav.addObject("societes", liste);
+        return mav;
+    }
+
+
+@GetMapping("/societe/image/{id}")
+public void getImage(@PathVariable int id, HttpServletResponse response) throws IOException {
+    try {
+        Societe societe = new Societe().getById(id, null);
+        byte[] image = societe.getPhoto();
+
+        if (image != null && image.length > 0) {
+            response.setContentType("image/jpeg");  // ou image/png selon ton type
+            response.getOutputStream().write(image);
+            response.getOutputStream().flush();
+        } else {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+    } catch (Exception e) {
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        e.printStackTrace();
+    }
+}
+
+@GetMapping("/societe/video/{id}")
+public void getVideo(@PathVariable int id, HttpServletResponse response) throws IOException {
+    try {
+        Societe societe = new Societe().getById(id, null);
+        byte[] video = societe.getVideo();
+
+        if (video != null && video.length > 0) {
+            response.setContentType("video/mp4");  // adapter selon ton type vidéo
+            response.getOutputStream().write(video);
+            response.getOutputStream().flush();
+        } else {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+    } catch (Exception e) {
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        e.printStackTrace();
+    }
+}
+
 
 }
 

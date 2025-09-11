@@ -21,13 +21,13 @@ import com.artizana.app.models.Utilisateur;
 @RequestMapping("api/project")
 public class SocieteController {
 
-   @GetMapping("/societes")
-   public Societe[] getListe()throws Exception{
-      Societe societe = new Societe();
-      System.out.println("aaa");
-      Societe[] liste = societe.getAll(null);
-      return liste;
-   }
+   // @GetMapping("/societes")
+   // public Societe[] getListe()throws Exception{
+   //    Societe societe = new Societe();
+   //    System.out.println("aaa");
+   //    Societe[] liste = societe.getAll(null);
+   //    return liste;
+   // }
 
    @GetMapping("/societe/{id}")
    public Societe getById(@PathVariable String id)throws Exception{
@@ -61,9 +61,11 @@ public class SocieteController {
       societe.setEtat(etat);
 
       if (photo != null && !photo.isEmpty()) {
-         societe.setPhoto(photo.getBytes()); 
-      }
-
+         byte[] photoBytes = photo.getBytes();
+         System.out.println("Image length: " + photoBytes.length);
+         societe.setPhoto(photoBytes); 
+     }
+     
       if (video != null && !video.isEmpty()) {
          societe.setVideo(video.getBytes());
       }
