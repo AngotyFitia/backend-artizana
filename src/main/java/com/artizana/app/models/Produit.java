@@ -12,6 +12,7 @@ public class Produit {
     Societe societe;
     String intitule;
     int etat;
+    PhotoProduit[] photosProduit;
 
     public int getIdProduit(){
         return this.idProduit;
@@ -27,6 +28,9 @@ public class Produit {
     }
     public int getEtat(){
         return this.etat;
+    }
+    public PhotoProduit[] getPhotosProduit() {
+        return photosProduit;
     }
     public void setIdProduit(int idProduit)throws Exception{
         this.idProduit=idProduit;
@@ -56,6 +60,10 @@ public class Produit {
         }
         this.setEtat(a);
     }
+    public void setPhotosProduit(PhotoProduit[] photosProduit) {
+        this.photosProduit = photosProduit;
+    }
+
 
     public Produit()throws Exception{}
     public Produit(int id, String intitule, Categorie categorie, Societe societe,  int etat)throws Exception{
@@ -90,8 +98,8 @@ public class Produit {
         return this;
     }
 
-    public Produit[] getAll(Connection con)throws Exception{
-        Vector<Produit> liste= new Vector<Produit>();
+    public PhotoProduit[] getAllPhotos(Connection con)throws Exception{
+        Vector<PhotoProduit> liste= new Vector<PhotoProduit>();
         boolean valid=true;
         Statement state=null;
         ResultSet result=null;
@@ -100,18 +108,16 @@ public class Produit {
                 con=Connect.connectDB();
                 valid=false;
             }
-            String sql = "SELECT * FROM produit WHERE etat=1";
+            String sql = "SELECT * FROM v_photos_produit WHERE id_produit="+this.getIdProduit();
             state = con.createStatement();
             System.out.println(sql);
             result = state.executeQuery(sql);
             while(result.next()){
                 int id= result.getInt(1);
-                Categorie categorie = new Categorie().getById(result.getInt(2), null);
-                Societe societe = new Societe().getById(result.getInt(3), null);
-                String intitule= result.getString(4);
-                int etat=result.getInt(5);
-                Produit produit = new Produit(id, intitule, categorie, societe, etat);
-                liste.add(produit);
+                Produit produit = new Produit().getById(result.getInt("id_produit"), null);
+                byte[] photo = result.getBytes("photo");
+                PhotoProduit societe = new PhotoProduit(id, produit, photo);
+                liste.add(societe);
             }
         } catch (Exception e) {   
             e.printStackTrace(); 
@@ -124,9 +130,10 @@ public class Produit {
                 e.printStackTrace();
             }
         }
-        Produit[] produits= new Produit[liste.size()];
-        liste.toArray(produits);
-        return produits;
+        PhotoProduit[] photos= new PhotoProduit[liste.size()];
+        liste.toArray(photos);
+        this.setPhotosProduit(photos);
+        return photos;
     }
 
     public Produit getById(int idProduit, Connection con)throws Exception{

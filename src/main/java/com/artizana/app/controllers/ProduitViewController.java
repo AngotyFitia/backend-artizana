@@ -25,15 +25,15 @@ public class ProduitViewController {
         return "ajout-produit"; 
     }
 
-    @GetMapping("/produits")
-    public ModelAndView afficherProduits() throws Exception {
-        Produit produit = new Produit();
-        Produit[] liste = produit.getAll(null);
+    // @GetMapping("/produits")
+    // public ModelAndView afficherProduits() throws Exception {
+    //     Produit produit = new Produit();
+    //     Produit[] liste = produit.getAll(null);
 
-        ModelAndView mav = new ModelAndView("liste-produits");
-        mav.addObject("produits", liste);
-        return mav;
-    }
+    //     ModelAndView mav = new ModelAndView("liste-produits");
+    //     mav.addObject("produits", liste);
+    //     return mav;
+    // }
 
     @PostMapping("/produit-ajout")
     public ModelAndView traiterFormulaire(HttpServletRequest request) throws Exception {
@@ -55,7 +55,7 @@ public class ProduitViewController {
         return new ModelAndView("redirect:/api/mobile/produits");
     }
 
-    @GetMapping("/societes")
+    @GetMapping("/societess")
     public ModelAndView getListe()throws Exception{
         Societe societe = new Societe();
         System.out.println("aaa");
@@ -66,44 +66,43 @@ public class ProduitViewController {
         return mav;
     }
 
+    @GetMapping("/societe/image/{id}")
+    public void getImage(@PathVariable int id, HttpServletResponse response) throws IOException {
+        try {
+            Societe societe = new Societe().getById(id, null);
+            byte[] image = societe.getPhoto();
 
-@GetMapping("/societe/image/{id}")
-public void getImage(@PathVariable int id, HttpServletResponse response) throws IOException {
-    try {
-        Societe societe = new Societe().getById(id, null);
-        byte[] image = societe.getPhoto();
-
-        if (image != null && image.length > 0) {
-            response.setContentType("image/jpeg");  // ou image/png selon ton type
-            response.getOutputStream().write(image);
-            response.getOutputStream().flush();
-        } else {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            if (image != null && image.length > 0) {
+                response.setContentType("image/jpeg"); 
+                response.getOutputStream().write(image);
+                response.getOutputStream().flush();
+            } else {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            }
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        e.printStackTrace();
     }
-}
 
-@GetMapping("/societe/video/{id}")
-public void getVideo(@PathVariable int id, HttpServletResponse response) throws IOException {
-    try {
-        Societe societe = new Societe().getById(id, null);
-        byte[] video = societe.getVideo();
+    @GetMapping("/societe/video/{id}")
+    public void getVideo(@PathVariable int id, HttpServletResponse response) throws IOException {
+        try {
+            Societe societe = new Societe().getById(id, null);
+            byte[] video = societe.getVideo();
 
-        if (video != null && video.length > 0) {
-            response.setContentType("video/mp4");  // adapter selon ton type vidéo
-            response.getOutputStream().write(video);
-            response.getOutputStream().flush();
-        } else {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            if (video != null && video.length > 0) {
+                response.setContentType("video/mp4");  
+                response.getOutputStream().write(video);
+                response.getOutputStream().flush();
+            } else {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            }
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        e.printStackTrace();
     }
-}
 
 
 }

@@ -19,7 +19,7 @@ public class Societe {
     int etat;
     String photoBase64;
     String videoBase64;
-
+    Produit[] produits;
 
     public int getIdSociete(){
         return this.idSociete;
@@ -45,7 +45,9 @@ public class Societe {
     public int getEtat(){
         return this.etat;
     }
-    
+    public Produit[] getProduits() {
+        return produits;
+    }  
     public void setIdSociete(int idSociete)throws Exception{
         this.idSociete=idSociete;
     }
@@ -84,29 +86,29 @@ public class Societe {
     }
     public void setEtat(int etat)throws Exception{
         this.etat=etat;
-    }
-    
+    }   
     public void setPhotoBase64(String base64) {
         this.photoBase64 = base64;
         if (base64 != null && !base64.isEmpty()) {
             this.photo = Base64.getDecoder().decode(base64);
         }
     }
-    
     public void setVideoBase64(String base64) {
         this.videoBase64 = base64;
         if (base64 != null && !base64.isEmpty()) {
             this.video = Base64.getDecoder().decode(base64);
         }
     }
+    public void setProduits(Produit[] produits)throws Exception {
+        this.produits = produits;
+    }
     
-
     public Societe()throws Exception{}
     
     public Societe(int id, String nom, Utilisateur utilisateur, String titre, String histoire, byte[] photo, byte[] video, int etat)throws Exception{
-        this.setIdSociete(id);
-        this.setNom(nom);
-        this.setUtilisateur(utilisateur);
+        setIdSociete(id);
+        setNom(nom);
+        setUtilisateur(utilisateur);
         setHistoire(histoire);
         setTitre(titre);
         setPhoto(photo);
@@ -124,16 +126,14 @@ public class Societe {
                 keepConnectionOpen = false;
         }
         String sql = "INSERT INTO societe ( id_utilisateur,  nom, titre, histoire,   photo,  video,etat) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id_societe";
-
         pstmt = con.prepareStatement(sql);
         pstmt.setInt(1, this.getUtilisateur().getIdUtilisateur());
         pstmt.setString(2, this.getNom());
         pstmt.setString(3, this.getTitre());
         pstmt.setString(4, this.getHistoire());
-        pstmt.setBytes(5, this.getPhoto());     // byte[]
-        pstmt.setBytes(6, this.getVideo());     // byte[]
-        pstmt.setInt(7, this.getEtat());
-
+        pstmt.setBytes(5, this.getPhoto());     
+        pstmt.setBytes(6, this.getVideo());
+        pstmt.setInt(7, 1);
         res = pstmt.executeQuery();
         if (res.next()) {
             this.setIdSociete(res.getInt("id_societe"));
@@ -160,7 +160,7 @@ public class Societe {
                 con=Connect.connectDB();
                 valid=false;
             }
-            String sql = "SELECT * FROM societe";
+            String sql = "SELECT * FROM societe WHERE ETAT=1";
             state = con.createStatement();
             System.out.println(sql);
             result = state.executeQuery(sql);
@@ -192,6 +192,46 @@ public class Societe {
         return societes;
     }
 
+    public Produit[] getAllProduits(Connection con) throws Exception{
+        Vector<Produit> liste= new Vector<Produit>();
+        boolean valid=true;
+        Statement state=null;
+        ResultSet result=null;
+        try {
+            if(con==null){
+                con=Connect.connectDB();
+                valid=false;
+            }
+            String sql = "SELECT * FROM v_produits_societe WHERE id_societe="+this.getIdSociete();
+            state = con.createStatement();
+            System.out.println(sql);
+            result = state.executeQuery(sql);
+            while(result.next()){
+                int id= result.getInt(1);
+                Categorie categorie = new Categorie().getById(result.getInt(2), null);
+                Societe societe = new Societe().getById(result.getInt(3), null);
+                String intitule= result.getString(4);
+                int etat=result.getInt(5);
+                Produit produit = new Produit(id, intitule, categorie, societe, etat);
+                liste.add(produit);
+            }
+        } catch (Exception e) {   
+            e.printStackTrace(); 
+        }finally{
+            try {
+                if(state!=null ){ state.close(); }
+                if(result!=null ){ result.close(); }
+                if(valid==false || con !=null){ con.close(); }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        Produit[] produits= new Produit[liste.size()];
+        liste.toArray(produits);
+        this.setProduits(produits);
+        return produits;
+    }
+    
     public Societe getById(int idSociete, Connection con)throws Exception{
         Societe societe= null;
         boolean valid=true;
@@ -241,7 +281,7 @@ public class Societe {
                 con=Connect.connectDB();
                 valid=false;
             }
-            String sql = "SELECT * FROM societe WHERE id_utilisateur="+idUtilisateur;
+            String sql = "SELECT * FROM societe WHERE id_utilisateur="+idUtilisateur+" AND etat=1";
             state = con.createStatement();
             System.out.println(sql);
             result = state.executeQuery(sql);
@@ -298,6 +338,10 @@ public class Societe {
                 if (!first) sql.append(", ");
                 sql.append("histoire='").append(this.getHistoire()).append("'");
             }
+            if (this.getPhoto() != null) {
+                if (!first) sql.append(", ");
+                sql.append("photo='").append(this.getPhoto()).append("'");
+            }
     
             sql.append(" WHERE id_societe=").append(this.getIdSociete());
             System.out.println("SQL: " + sql.toString());
@@ -312,7 +356,6 @@ public class Societe {
             if (!keepConnectionOpen) con.close();
         }
     }
-    
 
     public void delete(Connection con)throws Exception{
         boolean valid=true;
