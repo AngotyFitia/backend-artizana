@@ -3,13 +3,13 @@ package com.artizana.app.models;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Vector;
+import java.util.Base64;
 
 public class PhotoProduit {
     int idPhoto;
     Produit produit;
     byte[] photo;
-
+    
     public int getIdPhoto() {
         return idPhoto;
     }
@@ -27,6 +27,10 @@ public class PhotoProduit {
     }
     public void setPhoto(byte[] photo) throws Exception{
         this.photo = photo;
+    }
+    public String getPhotoBase64() {
+        if (this.photo == null) return null;
+        return Base64.getEncoder().encodeToString(this.photo);
     }
 
     public PhotoProduit() throws Exception{}
@@ -62,43 +66,6 @@ public class PhotoProduit {
             if (!keepConnectionOpen) con.close();
         }
         return this;
-    }
-
-    public static PhotoProduit[] getByProduit(Produit produit, Connection con) throws Exception {
-        Vector<PhotoProduit> photos = new Vector<>();
-        boolean keepConnectionOpen = true;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-
-        try {
-            if (con == null) {
-                con = Connect.connectDB();
-                keepConnectionOpen = false;
-            }
-
-            String sql = "SELECT * FROM photo_produit WHERE id_produit = ?";
-            pstmt = con.prepareStatement(sql);
-            pstmt.setInt(1, produit.getIdProduit());
-            rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                int idPhoto = rs.getInt("id_photo");
-                byte[] photoBytes = rs.getBytes("photo");
-                PhotoProduit pp = new PhotoProduit(idPhoto, produit, photoBytes);
-                photos.add(pp);
-            }
-
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            if (rs != null) rs.close();
-            if (pstmt != null) pstmt.close();
-            if (!keepConnectionOpen && con != null) con.close();
-        }
-
-        PhotoProduit[] result = new PhotoProduit[photos.size()];
-        photos.toArray(result);
-        return result;
     }
 
 }
