@@ -3,6 +3,7 @@ package com.artizana.app.models;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Vector;
 
 public class Categorie {
     int idCategorie;
@@ -80,6 +81,43 @@ public class Categorie {
             }
         }
         return categorie;
+    }
+
+    public Categorie[] getAll(Connection con)throws Exception{
+        Vector<Categorie> liste= new Vector<Categorie>();
+        boolean valid=true;
+        Statement state=null;
+        ResultSet result=null;
+        try {
+            if(con==null){
+                con=Connect.connectDB();
+                valid=false;
+            }
+            String sql = "SELECT * FROM categorie WHERE ETAT=1";
+            state = con.createStatement();
+            System.out.println(sql);
+            result = state.executeQuery(sql);
+            while(result.next()){
+                int id= result.getInt("id_categorie");
+                String intitule = result.getString("intitule");
+                int etat= result.getInt("etat");
+                Categorie categorie = new Categorie(id, intitule, etat);
+                liste.add(categorie);
+            }
+        } catch (Exception e) {   
+            e.printStackTrace(); 
+        }finally{
+            try {
+                if(state!=null ){ state.close(); }
+                if(result!=null ){ result.close(); }
+                if(valid==false || con !=null){ con.close(); }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        Categorie[] categories= new Categorie[liste.size()];
+        liste.toArray(categories);
+        return categories;
     }
 
 }

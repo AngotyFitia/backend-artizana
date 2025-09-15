@@ -136,6 +136,46 @@ public class Produit {
         return photos;
     }
 
+    public Produit[] getAll(Connection con)throws Exception{
+        Vector<Produit> liste= new Vector<Produit>();
+        boolean valid=true;
+        Statement state=null;
+        ResultSet result=null;
+        try {
+            if(con==null){
+                con=Connect.connectDB();
+                valid=false;
+            }
+            String sql = "SELECT * FROM produit WHERE etat=1";
+            state = con.createStatement();
+            System.out.println(sql);
+            result = state.executeQuery(sql);
+            while(result.next()){
+                int id= result.getInt("id_produit");
+                Categorie categorie = new Categorie().getById(result.getInt("id_categorie"), null);
+                Societe societe = new Societe().getById(result.getInt("id_societe"), null);
+                String intitule = result.getString("intitule");
+                int etat = result.getInt("etat");
+                Produit produit = new Produit(id, intitule, categorie, societe, etat);
+                liste.add(produit);
+            }
+        } catch (Exception e) {   
+            e.printStackTrace(); 
+        }finally{
+            try {
+                if(state!=null ){ state.close(); }
+                if(result!=null ){ result.close(); }
+                if(valid==false || con !=null){ con.close(); }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        Produit[] produits= new Produit[liste.size()];
+        liste.toArray(produits);
+        return produits;
+    }
+
+    
     public Produit getById(int idProduit, Connection con)throws Exception{
         Produit produit= null;
         boolean valid=true;

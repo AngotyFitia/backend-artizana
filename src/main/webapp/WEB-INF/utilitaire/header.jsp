@@ -125,10 +125,10 @@
                   <a class="nav-link pl-lg-2" href="./ui-color.html"
                     ><span class="ml-1">Catégories</span></a
                   >
-                  <a class="nav-link pl-lg-2" href="/api/web/formulaire-societe">
+                  <a class="nav-link pl-lg-2" href="/api/web/liste-societes">
                     <span class="ml-1">Sociétés</span>
                   </a>
-                  <a class="nav-link pl-lg-2" href="./ui-icons.html"
+                  <a class="nav-link pl-lg-2" href="/api/web/liste-produits"
                     ><span class="ml-1">Produits</span></a
                   >
                 </div>
