@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.artizana.app.models.PhotoProduit;
+import com.artizana.app.models.PrixProduit;
 import com.artizana.app.models.Produit;
 import com.artizana.app.models.Societe;
 import com.artizana.app.models.Utilisateur;
@@ -52,5 +53,31 @@ public class ProduitServlet {
         produit.insert(null);
         return new ModelAndView("redirect:/api/web/liste-produits");
    }
+
+  @PostMapping("/produit-photo-form")
+  public PhotoProduit ajoutPhoto(@RequestParam("id_produit") int idProduit,
+                      @RequestParam(value = "photo", required = false) MultipartFile photo)throws Exception{
+    PhotoProduit imagePhoto = new PhotoProduit();
+    Produit produit = new Produit();
+    produit.setIdProduit(idProduit);
+    imagePhoto.setProduit(produit);
+
+    if (photo != null && !photo.isEmpty()) {
+      byte[] photoBytes = photo.getBytes();
+      System.out.println("Image length: " + photoBytes.length);
+      imagePhoto.setPhoto(photoBytes); 
+    }
+      return imagePhoto.insert(null);
+  }
+
+  @PostMapping("/produit-prix-form")
+  public PrixProduit ajoutPrix(@RequestParam("id_produit") int idProduit, @RequestParam("prix") double prix)throws Exception{
+    PrixProduit prixProduit = new PrixProduit();
+    Produit produit = new Produit();
+    produit.setIdProduit(idProduit);
+    prixProduit.setProduit(produit);
+    prixProduit.setPrix(prix);
+    return prixProduit.insert(null);
+  }
    
 }

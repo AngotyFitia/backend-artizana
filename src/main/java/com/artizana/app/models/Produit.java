@@ -1,5 +1,6 @@
 package com.artizana.app.models;
 
+import java.sql.Timestamp;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
@@ -13,6 +14,7 @@ public class Produit {
     String intitule;
     int etat;
     PhotoProduit[] photosProduit;
+    PrixProduit prixProduit;
 
     public int getIdProduit(){
         return this.idProduit;
@@ -31,6 +33,10 @@ public class Produit {
     }
     public PhotoProduit[] getPhotosProduit() {
         return photosProduit;
+    }
+
+    public PrixProduit getPrixProduit() {
+        return prixProduit;
     }
     public void setIdProduit(int idProduit)throws Exception{
         this.idProduit=idProduit;
@@ -62,6 +68,9 @@ public class Produit {
     }
     public void setPhotosProduit(PhotoProduit[] photosProduit) {
         this.photosProduit = photosProduit;
+    }
+    public void setPrixProduit(PrixProduit prixProduit) {
+        this.prixProduit = prixProduit;
     }
 
 
@@ -134,6 +143,42 @@ public class Produit {
         liste.toArray(photos);
         this.setPhotosProduit(photos);
         return photos;
+    }
+
+    public PrixProduit getPrix(Connection con)throws Exception{
+        PrixProduit prixProduit = null;
+        boolean valid=true;
+        Statement state=null;
+        ResultSet result=null;
+        try {
+            if(con==null){
+                con=Connect.connectDB();
+                valid=false;
+            }
+            String sql = "SELECT * FROM v_prix_produit_recent WHERE id_produit="+this.getIdProduit();
+            state = con.createStatement();
+            System.out.println(sql);
+            result = state.executeQuery(sql);
+            while(result.next()){
+                int id= result.getInt("id_prix");
+                Produit produit = new Produit().getById(result.getInt("id_produit"), null);
+                double prix = result.getDouble("prix");
+                Timestamp date = result.getTimestamp("date");
+                prixProduit = new PrixProduit(id, produit, prix, date);
+                this.setPrixProduit(prixProduit);
+            }
+        } catch (Exception e) {   
+            e.printStackTrace(); 
+        }finally{
+            try {
+                if(state!=null ){ state.close(); }
+                if(result!=null ){ result.close(); }
+                if(valid==false || con !=null){ con.close(); }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return prixProduit;
     }
 
     public Produit[] getAll(Connection con)throws Exception{

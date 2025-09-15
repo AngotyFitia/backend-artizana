@@ -43,7 +43,7 @@ CREATE TABLE Prix_produit(
     id_prix SERIAL PRIMARY KEY,
     id_produit INTEGER,
     prix DOUBLE PRECISION,
-    "date" DATE,
+    "date" TIMESTAMP,
     FOREIGN KEY(id_produit) REFERENCES Produit(id_produit)
 );
 
@@ -78,6 +78,8 @@ CREATE TABLE Facture(
     etat INTEGER,
     FOREIGN KEY(id_utilisateur) REFERENCES Utilisateur(id_utilisateur)
 );
+ALTER TABLE Facture ADD COLUMN id_societe INTEGER REFERENCES Societe(id_societe);
+
 
 CREATE TABLE Details_facture(
     id_details SERIAL PRIMARY KEY,
@@ -96,4 +98,9 @@ CREATE TABLE Avis_client(
     FOREIGN KEY(id_utilisateur) REFERENCES Utilisateur(id_utilisateur),
     FOREIGN KEY(id_societe) REFERENCES Societe(id_societe)
 );
+
+
+-- ALTER TABLE prix_produit
+-- ALTER COLUMN date TYPE TIMESTAMP,
+-- ALTER COLUMN date SET DEFAULT CURRENT_TIMESTAMP;
 
