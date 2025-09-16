@@ -15,6 +15,7 @@ public class Produit {
     int etat;
     PhotoProduit[] photosProduit;
     PrixProduit prixProduit;
+    MouvementStock etatStock;
 
     public int getIdProduit(){
         return this.idProduit;
@@ -33,6 +34,9 @@ public class Produit {
     }
     public PhotoProduit[] getPhotosProduit() {
         return photosProduit;
+    }
+    public MouvementStock getEtatStock() {
+        return etatStock;
     }
 
     public PrixProduit getPrixProduit() {
@@ -72,7 +76,9 @@ public class Produit {
     public void setPrixProduit(PrixProduit prixProduit) {
         this.prixProduit = prixProduit;
     }
-
+    public void setEtatStock(MouvementStock etatStock) {
+        this.etatStock = etatStock;
+    }
 
     public Produit()throws Exception{}
     public Produit(int id, String intitule, Categorie categorie, Societe societe,  int etat)throws Exception{
@@ -181,6 +187,41 @@ public class Produit {
         return prixProduit;
     }
 
+    public MouvementStock getEtatStock(Connection con)throws Exception{
+        MouvementStock mouvementStock = null;
+        boolean valid=true;
+        Statement state=null;
+        ResultSet result=null;
+        try {
+            if(con==null){
+                con=Connect.connectDB();
+                valid=false;
+            }
+            String sql = "SELECT * FROM v_stock_produit WHERE id_produit="+this.getIdProduit();
+            state = con.createStatement();
+            System.out.println(sql);
+            result = state.executeQuery(sql);
+            while(result.next()){
+                mouvementStock= new MouvementStock();
+                Produit produit = new Produit().getById(result.getInt("id_produit"), null);
+                mouvementStock.setProduit(produit);
+                mouvementStock.setQuantiteActuel(result.getInt("stock_actuel"));
+                this.setEtatStock(mouvementStock);
+            }
+        } catch (Exception e) {   
+            e.printStackTrace(); 
+        }finally{
+            try {
+                if(state!=null ){ state.close(); }
+                if(result!=null ){ result.close(); }
+                if(valid==false || con !=null){ con.close(); }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return mouvementStock;
+    }
+
     public Produit[] getAll(Connection con)throws Exception{
         Vector<Produit> liste= new Vector<Produit>();
         boolean valid=true;
@@ -220,7 +261,6 @@ public class Produit {
         return produits;
     }
 
-    
     public Produit getById(int idProduit, Connection con)throws Exception{
         Produit produit= null;
         boolean valid=true;

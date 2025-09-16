@@ -23,4 +23,15 @@ CREATE OR REPLACE VIEW v_total_facture AS(
     GROUP BY f.id_facture, f.id_utilisateur, f.id_societe, f.date, f.etat
 );
 
+CREATE OR REPLACE VIEW v_stock_produit AS(
+    SELECT 
+        p.id_produit,
+        p.intitule,
+        (SUM(ms.quantite_entree) - SUM(ms.quantite_sortie)) AS stock_actuel
+    FROM produit p
+    LEFT JOIN mouvement_stock ms ON p.id_produit = ms.id_produit
+    GROUP BY p.id_produit, p.intitule
+    ORDER BY p.id_produit
+);
+
 
