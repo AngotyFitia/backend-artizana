@@ -2,6 +2,7 @@
 pageEncoding="UTF-8"%> <%@ taglib prefix="c"
 uri="http://java.sun.com/jsp/jstl/core" %> <%@ taglib prefix="liste"
 uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -15,24 +16,25 @@ uri="http://java.sun.com/jsp/jstl/core" %>
     <link rel="icon" href="favicon.ico" />
     <title>Artizana</title>
     <!-- Simple bar CSS -->
-    <link rel="stylesheet" href="css/simplebar.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/simplebar.css" />
     <!-- Fonts CSS -->
     <link
       href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/simplebar.css" />
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/feather.css" />
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/select2.css" />
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/dropzone.css" />
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/uppy.min.css" />
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/jquery.steps.css" />
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/jquery.timepicker.css" />
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/quill.snow.css" />
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/daterangepicker.css" />
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/app-light.css" id="lightTheme" />
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/app-dark.css" id="darkTheme" disabled />
-
+    <!-- Icons CSS -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/feather.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/select2.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dropzone.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/uppy.min.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/jquery.steps.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/jquery.timepicker.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/quill.snow.css" />
+    <!-- Date Range Picker CSS -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/daterangepicker.css" />
+    <!-- App CSS -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/app-light.css" id="lightTheme"/>
+    <link rel="stylesheet" href="css/app-dark.css" id="darkTheme" disabled />
   </head>
   <body class="horizontal light">
     <div class="wrapper">
@@ -62,10 +64,8 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           <button class="navbar-toggler mt-2 mr-auto toggle-sidebar text-muted">
             <i class="fe fe-menu navbar-toggler-icon"></i>
           </button>
-          <div
-            class="navbar-slide bg-white ml-lg-4"
-            id="navbarSupportedContent"
-          >
+          <div class="collapse navbar-collapse navbar-slide bg-white ml-lg-4" id="navbarSupportedContent">
+
             <a
               href="#"
               class="btn toggle-sidebar d-lg-none text-muted ml-2 mt-3"
@@ -120,35 +120,20 @@ uri="http://java.sun.com/jsp/jstl/core" %>
                   aria-haspopup="true"
                   aria-expanded="false"
                 >
-                  <span class="ml-lg-2">Paramètrage</span>
+                  <span class="ml-lg-2">Paramétrage</span>
                 </a>
                 <div
                   class="dropdown-menu"
                   aria-labelledby="ui-elementsDropdown"
                 >
                   <a class="nav-link pl-lg-2" href="./ui-color.html"
-                    ><span class="ml-1">Colors</span></a
+                    ><span class="ml-1">Catégories</span></a
                   >
-                  <a class="nav-link pl-lg-2" href="./ui-typograpy.html"
-                    ><span class="ml-1">Typograpy</span></a
-                  >
-                  <a class="nav-link pl-lg-2" href="./ui-icons.html"
-                    ><span class="ml-1">Icons</span></a
-                  >
-                  <a class="nav-link pl-lg-2" href="./ui-buttons.html"
-                    ><span class="ml-1">Buttons</span></a
-                  >
-                  <a class="nav-link pl-lg-2" href="./ui-notification.html"
-                    ><span class="ml-1">Notifications</span></a
-                  >
-                  <a class="nav-link pl-lg-2" href="./ui-modals.html"
-                    ><span class="ml-1">Modals</span></a
-                  >
-                  <a class="nav-link pl-lg-2" href="./ui-tabs-accordion.html"
-                    ><span class="ml-1">Tabs & Accordion</span></a
-                  >
-                  <a class="nav-link pl-lg-2" href="./ui-progress.html"
-                    ><span class="ml-1">Progress</span></a
+                  <a class="nav-link pl-lg-2" href="/api/web/liste-societes">
+                    <span class="ml-1">Sociétés</span>
+                  </a>
+                  <a class="nav-link pl-lg-2" href="/api/web/liste-produits"
+                    ><span class="ml-1">Produits</span></a
                   >
                 </div>
               </li>
@@ -201,14 +186,15 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           </ul>
         </div>
       </nav>
-      
-      <main role="main" class="main-content">
-        <div class="container-fluid">
-          <div class="row justify-content-center">
-            <div class="col-12">
-              <div class="row align-items-center mb-2">
-                <div class="col">
-                  <h2 class="h5 page-title">Tongasoa , Bienvenue , Welcome !</h2>
-                </div>
-              </div>
-              
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+<script>
+  $(function () {
+    $('.dropdown-toggle').dropdown(); // initialise manuellement
+  });
+</script>
+
+  </body>
+</html>

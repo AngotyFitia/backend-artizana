@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Vector;
 
 public class Categorie {
     int idCategorie;
@@ -99,46 +100,46 @@ public class Categorie {
     }
 
     public Categorie[] getAll(Connection con) throws Exception {
-        ArrayList<Categorie> list = new ArrayList<>();
-        boolean valid = false;
-
+        Vector<Categorie> liste = new Vector<Categorie>();
+        boolean valid = true;
+        Statement state = null;
+        ResultSet result = null;
         try {
             if (con == null) {
                 con = Connect.connectDB();
-                valid = true;
+                valid = false;
             }
-
-            String sql = "SELECT * FROM categorie WHERE etat = ?";
-            try (PreparedStatement pstmt = con.prepareStatement(sql)) {
-                pstmt.setInt(1, 1);
-
-                try (ResultSet rs = pstmt.executeQuery()) {
-                    while (rs.next()) {
-                        System.out.println(rs);
-
-                        int id = rs.getInt("id_categorie");
-                        System.out.println(id);
-                        String intitule = rs.getString("intitule");
-                        int etat = rs.getInt("etat");
-                        System.out.printf("id=%d, intitule=%s, etat=%d%n", id, intitule, etat);
-
-                        list.add(new Categorie(id, intitule, etat));
-                    }
-                }
+            String sql = "SELECT * FROM categorie WHERE ETAT=1";
+            state = con.createStatement();
+            System.out.println(sql);
+            result = state.executeQuery(sql);
+            while (result.next()) {
+                int id = result.getInt("id_categorie");
+                String intitule = result.getString("intitule");
+                int etat = result.getInt("etat");
+                Categorie categorie = new Categorie(id, intitule, etat);
+                liste.add(categorie);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
-            throw e;
         } finally {
-            if (valid && con != null) {
-                con.close();
+            try {
+                if (state != null) {
+                    state.close();
+                }
+                if (result != null) {
+                    result.close();
+                }
+                if (valid == false || con != null) {
+                    con.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
-
-        System.out.println("Nombre de catégories trouvées : " + list.size());
-
-        return list.toArray(new Categorie[0]);
+        Categorie[] categories = new Categorie[liste.size()];
+        liste.toArray(categories);
+        return categories;
     }
 
 }

@@ -1,0 +1,4 @@
+<!-- <%-- <video width="320" height="240" controls>
+                        <source src="<%= request.getContextPath() + "/api/mobile/societe/video/" + p.getIdSociete() %>" type="video/mp4">
+                        Votre navigateur ne supporte pas la vidéo.
+                      </video> %> -->

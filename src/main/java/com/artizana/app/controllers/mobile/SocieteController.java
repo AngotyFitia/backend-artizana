@@ -1,4 +1,4 @@
-package com.artizana.app.controllers;
+package com.artizana.app.controllers.mobile;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,26 +14,28 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.artizana.app.models.Societe;
+import com.artizana.app.models.Produit;
 import com.artizana.app.models.Utilisateur;
 
 @CrossOrigin(origins="*", allowedHeaders="*")
 @RestController
-@RequestMapping("api/project")
+@RequestMapping("api/mobile")
 public class SocieteController {
 
-   // @GetMapping("/societes")
-   // public Societe[] getListe()throws Exception{
-   //    Societe societe = new Societe();
-   //    System.out.println("aaa");
-   //    Societe[] liste = societe.getAll(null);
-   //    return liste;
-   // }
+    @GetMapping("/societes")
+    public Societe[] getListe()throws Exception{
+      Societe societe = new Societe();
+      System.out.println("aaa");
+      Societe[] liste = societe.getAll(null);
+      return liste;
+    }
 
    @GetMapping("/societe/{id}")
-   public Societe getById(@PathVariable String id)throws Exception{
+   public Produit[] getById(@PathVariable String id)throws Exception{
       Societe societe = new Societe();
-      societe=societe.getById(Integer.valueOf(id),null);
-      return societe;
+      societe.setIdSociete(Integer.valueOf(id));
+      Produit[] produits= societe.getAllProduits(null);
+      return produits;
    }
 
    @GetMapping("/societe-utilisateur/{id}")

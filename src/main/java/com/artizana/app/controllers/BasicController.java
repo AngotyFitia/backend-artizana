@@ -11,9 +11,9 @@ import org.springframework.stereotype.Controller;
 @Controller
 @RequestMapping("api/project")
 public class BasicController {
-  @GetMapping("/welcome")
-  public String welcomePage(Model model) {
-    model.addAttribute("date", new Date().toString());
-    return "welcome";
-  }
+  // @GetMapping("/welcome")
+  // public String welcomePage(Model model) {
+  //   model.addAttribute("date", new Date().toString());
+  //   return "index";
+  // }
 }

@@ -1,5 +1,6 @@
 package com.artizana.app.models;
 
+import java.sql.Timestamp;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
@@ -12,6 +13,8 @@ public class Produit {
     Societe societe;
     String intitule;
     int etat;
+    PhotoProduit[] photosProduit;
+    PrixProduit prixProduit;
 
     public int getIdProduit(){
         return this.idProduit;
@@ -27,6 +30,13 @@ public class Produit {
     }
     public int getEtat(){
         return this.etat;
+    }
+    public PhotoProduit[] getPhotosProduit() {
+        return photosProduit;
+    }
+
+    public PrixProduit getPrixProduit() {
+        return prixProduit;
     }
     public void setIdProduit(int idProduit)throws Exception{
         this.idProduit=idProduit;
@@ -56,6 +66,13 @@ public class Produit {
         }
         this.setEtat(a);
     }
+    public void setPhotosProduit(PhotoProduit[] photosProduit) {
+        this.photosProduit = photosProduit;
+    }
+    public void setPrixProduit(PrixProduit prixProduit) {
+        this.prixProduit = prixProduit;
+    }
+
 
     public Produit()throws Exception{}
     public Produit(int id, String intitule, Categorie categorie, Societe societe,  int etat)throws Exception{
@@ -90,6 +107,80 @@ public class Produit {
         return this;
     }
 
+    public PhotoProduit[] getAllPhotos(Connection con)throws Exception{
+        Vector<PhotoProduit> liste= new Vector<PhotoProduit>();
+        boolean valid=true;
+        Statement state=null;
+        ResultSet result=null;
+        try {
+            if(con==null){
+                con=Connect.connectDB();
+                valid=false;
+            }
+            String sql = "SELECT * FROM v_photos_produit WHERE id_produit="+this.getIdProduit();
+            state = con.createStatement();
+            System.out.println(sql);
+            result = state.executeQuery(sql);
+            while(result.next()){
+                int id= result.getInt(1);
+                Produit produit = new Produit().getById(result.getInt("id_produit"), null);
+                byte[] photo = result.getBytes("photo");
+                PhotoProduit societe = new PhotoProduit(id, produit, photo);
+                liste.add(societe);
+            }
+        } catch (Exception e) {   
+            e.printStackTrace(); 
+        }finally{
+            try {
+                if(state!=null ){ state.close(); }
+                if(result!=null ){ result.close(); }
+                if(valid==false || con !=null){ con.close(); }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        PhotoProduit[] photos= new PhotoProduit[liste.size()];
+        liste.toArray(photos);
+        this.setPhotosProduit(photos);
+        return photos;
+    }
+
+    public PrixProduit getPrix(Connection con)throws Exception{
+        PrixProduit prixProduit = null;
+        boolean valid=true;
+        Statement state=null;
+        ResultSet result=null;
+        try {
+            if(con==null){
+                con=Connect.connectDB();
+                valid=false;
+            }
+            String sql = "SELECT * FROM v_prix_produit_recent WHERE id_produit="+this.getIdProduit();
+            state = con.createStatement();
+            System.out.println(sql);
+            result = state.executeQuery(sql);
+            while(result.next()){
+                int id= result.getInt("id_prix");
+                Produit produit = new Produit().getById(result.getInt("id_produit"), null);
+                double prix = result.getDouble("prix");
+                Timestamp date = result.getTimestamp("date");
+                prixProduit = new PrixProduit(id, produit, prix, date);
+                this.setPrixProduit(prixProduit);
+            }
+        } catch (Exception e) {   
+            e.printStackTrace(); 
+        }finally{
+            try {
+                if(state!=null ){ state.close(); }
+                if(result!=null ){ result.close(); }
+                if(valid==false || con !=null){ con.close(); }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return prixProduit;
+    }
+
     public Produit[] getAll(Connection con)throws Exception{
         Vector<Produit> liste= new Vector<Produit>();
         boolean valid=true;
@@ -105,11 +196,11 @@ public class Produit {
             System.out.println(sql);
             result = state.executeQuery(sql);
             while(result.next()){
-                int id= result.getInt(1);
-                Categorie categorie = new Categorie().getById(result.getInt(2), null);
-                Societe societe = new Societe().getById(result.getInt(3), null);
-                String intitule= result.getString(4);
-                int etat=result.getInt(5);
+                int id= result.getInt("id_produit");
+                Categorie categorie = new Categorie().getById(result.getInt("id_categorie"), null);
+                Societe societe = new Societe().getById(result.getInt("id_societe"), null);
+                String intitule = result.getString("intitule");
+                int etat = result.getInt("etat");
                 Produit produit = new Produit(id, intitule, categorie, societe, etat);
                 liste.add(produit);
             }
@@ -129,6 +220,7 @@ public class Produit {
         return produits;
     }
 
+    
     public Produit getById(int idProduit, Connection con)throws Exception{
         Produit produit= null;
         boolean valid=true;
