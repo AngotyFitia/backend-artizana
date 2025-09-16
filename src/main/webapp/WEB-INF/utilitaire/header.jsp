@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-pageEncoding="UTF-8"%>
+pageEncoding="UTF-8"%> <%@ taglib prefix="c"
+uri="http://java.sun.com/jsp/jstl/core" %> <%@ taglib prefix="liste"
+uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -13,25 +15,24 @@ pageEncoding="UTF-8"%>
     <link rel="icon" href="favicon.ico" />
     <title>Artizana</title>
     <!-- Simple bar CSS -->
-    <link rel="stylesheet" href="/css/simplebar.css" />
+    <link rel="stylesheet" href="css/simplebar.css" />
     <!-- Fonts CSS -->
     <link
       href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap"
       rel="stylesheet"
     />
-    <!-- Icons CSS -->
-    <link rel="stylesheet" href="css/feather.css" />
-    <link rel="stylesheet" href="css/select2.css" />
-    <link rel="stylesheet" href="css/dropzone.css" />
-    <link rel="stylesheet" href="css/uppy.min.css" />
-    <link rel="stylesheet" href="css/jquery.steps.css" />
-    <link rel="stylesheet" href="css/jquery.timepicker.css" />
-    <link rel="stylesheet" href="css/quill.snow.css" />
-    <!-- Date Range Picker CSS -->
-    <link rel="stylesheet" href="css/daterangepicker.css" />
-    <!-- App CSS -->
-    <link rel="stylesheet" href="css/app-light.css" id="lightTheme" />
-    <link rel="stylesheet" href="css/app-dark.css" id="darkTheme" disabled />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/simplebar.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/feather.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/select2.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/dropzone.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/uppy.min.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/jquery.steps.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/jquery.timepicker.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/quill.snow.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/daterangepicker.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/app-light.css" id="lightTheme" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/app-dark.css" id="darkTheme" disabled />
+
   </head>
   <body class="horizontal light">
     <div class="wrapper">
@@ -176,7 +177,7 @@ pageEncoding="UTF-8"%>
               >
                 <span class="avatar avatar-sm mt-2">
                   <img
-                    src="./assets/avatars/face-1.jpg"
+                    src="${pageContext.request.contextPath}/assets/avatars/face-1.jpg"
                     alt="..."
                     class="avatar-img rounded-circle"
                   />
@@ -200,6 +201,14 @@ pageEncoding="UTF-8"%>
           </ul>
         </div>
       </nav>
-    </div>
-  </body>
-</html>
+      
+      <main role="main" class="main-content">
+        <div class="container-fluid">
+          <div class="row justify-content-center">
+            <div class="col-12">
+              <div class="row align-items-center mb-2">
+                <div class="col">
+                  <h2 class="h5 page-title">Tongasoa , Bienvenue , Welcome !</h2>
+                </div>
+              </div>
+              

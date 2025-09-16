@@ -6,10 +6,10 @@ import java.sql.DriverManager;
 public class Connect {
     Connection con;
 
-    public static Connection connectDB() throws Exception
-    {
+    public static Connection connectDB() throws Exception {
         Class.forName("org.postgresql.Driver");
-        Connection con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/artizana", "postgres", "mdpprom15");
+        Connection con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/artizana", "postgres", "nancy");
+        System.out.println(con);
         return con;
-    }    
+    }
 }
