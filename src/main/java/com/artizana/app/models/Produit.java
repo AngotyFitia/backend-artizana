@@ -433,4 +433,8 @@ public class Produit {
         return result;
     }
 
+    public void setEtatStock(MouvementStock etatStock) {
+        this.etatStock = etatStock;
+    }
+
 }
