@@ -1,8 +1,13 @@
 package com.artizana.app.models;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+
+import com.artizana.utils.PasswordUtils;
 
 public class Utilisateur {
     int idUtilisateur;
@@ -11,60 +16,88 @@ public class Utilisateur {
     String email;
     String motDePasse;
     int etat;
+    double monnaie;
+    Timestamp date_monnaie;
 
-    public int getIdUtilisateur(){
+    public int getIdUtilisateur() {
         return this.idUtilisateur;
     }
-    public String getNom(){
+
+    public String getNom() {
         return this.nom;
     }
-    public int getEtat(){
+
+    public int getEtat() {
         return this.etat;
     }
-    public void setIdUtilisateur(int idUtilisateur)throws Exception{
-        this.idUtilisateur=idUtilisateur;
+
+    public void setIdUtilisateur(int idUtilisateur) throws Exception {
+        this.idUtilisateur = idUtilisateur;
     }
-    public void setNom(String nom)throws Exception{
-        if(nom.length()==0){
+
+    public void setNom(String nom) throws Exception {
+        if (nom.length() == 0) {
             throw new Exception("Nom de l'utilisateur invalide.");
         }
-        this.nom=nom;
+        this.nom = nom;
     }
-    public void setPrenom(String prenom)throws Exception{
-        if(prenom.length()==0){
+
+    public void setPrenom(String prenom) throws Exception {
+        if (prenom.length() == 0) {
             throw new Exception("Prénom de l'utilisateur invalide.");
         }
-        this.prenom=prenom;
+        this.prenom = prenom;
     }
-    public void setEmail(String email)throws Exception{
-        if(email.length()==0){
+
+    public void setEmail(String email) throws Exception {
+        if (email.length() == 0) {
             throw new Exception("Email de l'utilisateur invalide.");
         }
-        this.email=email;
+        this.email = email;
     }
-    public void setMotDePasse(String motDePasse)throws Exception{
-        if(motDePasse.length()==0){
+
+    public void setMotDePasse(String motDePasse) throws Exception {
+        if (motDePasse.length() == 0) {
             throw new Exception("Mot de passe de l'utilisateur invalide.");
         }
-        this.motDePasse=motDePasse;
+        this.motDePasse = motDePasse;
     }
-    public void setEtat(int etat)throws Exception{
-        if(etat<0){
+
+    public void setEtat(int etat) throws Exception {
+        if (etat < 0) {
             throw new Exception("etat invalide: negatif");
         }
-        this.etat=etat;
+        this.etat = etat;
     }
-    
-    public void setEtat(String etat)throws Exception{
-        int a =Integer.valueOf(etat);
-        if(etat.length()==0){
+
+    public void setEtat(String etat) throws Exception {
+        int a = Integer.valueOf(etat);
+        if (etat.length() == 0) {
             throw new Exception("etat invalide: null");
         }
         this.setEtat(a);
     }
 
-    public Utilisateur()throws Exception{}
-    public Utilisateur(int id, String nom, String prenom, String email, String motDePasse, int etat)throws Exception{
+    public double getMonnaie() {
+        return monnaie;
+    }
+
+    public void setMonnaie(double monnaie) {
+        this.monnaie = monnaie;
+    }
+
+    public Timestamp getDate_monnaie() {
+        return date_monnaie;
+    }
+
+    public void setDate_monnaie(Timestamp date_monnaie) {
+        this.date_monnaie = date_monnaie;
+    }
+
+    public Utilisateur() {
+    }
+
+    public Utilisateur(int id, String nom, String prenom, String email, String motDePasse, int etat) throws Exception {
         this.setIdUtilisateur(id);
         this.setNom(nom);
         this.setPrenom(prenom);
@@ -73,42 +106,149 @@ public class Utilisateur {
         this.setEtat(etat);
     }
 
-    public Utilisateur getById(int idUtilisateur, Connection con)throws Exception{
-        Utilisateur utilisateur= null;
-        boolean valid=true;
-        Statement state=null;
-        ResultSet result=null;
+    public Utilisateur getById(int idUtilisateur, Connection con) throws Exception {
+        Utilisateur utilisateur = null;
+        boolean valid = true;
+        Statement state = null;
+        ResultSet result = null;
         try {
-            if(con==null){
-                con=Connect.connectDB();
-                valid=false;
+            if (con == null) {
+                con = Connect.connectDB();
+                valid = false;
             }
-            String sql = "SELECT * FROM utilisateur WHERE id_utilisateur="+idUtilisateur;
+            String sql = "SELECT * FROM utilisateur WHERE id_utilisateur=" + idUtilisateur;
             state = con.createStatement();
             System.out.println(sql);
             result = state.executeQuery(sql);
-            while(result.next()){
-                int id= result.getInt(1);
-                String nom= result.getString(2);
+            while (result.next()) {
+                int id = result.getInt(1);
+                String nom = result.getString(2);
                 System.out.println(nom);
-                String prenom= result.getString(3);
-                String motDePasse= result.getString(4);
-                String email= result.getString(5);
-                int etat= result.getInt(6);
+                String prenom = result.getString(3);
+                String motDePasse = result.getString(4);
+                String email = result.getString(5);
+                int etat = result.getInt(6);
                 utilisateur = new Utilisateur(id, nom, prenom, email, motDePasse, etat);
             }
-        } catch (Exception e) {   
-            e.printStackTrace(); 
-        }finally{
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
             try {
-                if(state!=null ){ state.close(); }
-                if(result!=null ){ result.close(); }
-                if(valid==false || con !=null){ con.close(); }
+                if (state != null) {
+                    state.close();
+                }
+                if (result != null) {
+                    result.close();
+                }
+                if (valid == false || con != null) {
+                    con.close();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         return utilisateur;
+    }
+
+    public Utilisateur getUtilisateurByemailPassword(String email, String password, Connection con) throws Exception {
+        Utilisateur user = null;
+        boolean valid = false;
+        try {
+            if (con == null) {
+                con = Connect.connectDB();
+                valid = true;
+            }
+
+            String request = "SELECT * FROM utilisateur WHERE email = ? AND mot_de_passe = ?";
+            PreparedStatement ps = con.prepareStatement(request);
+            ps.setString(1, email);
+            ps.setString(2, PasswordUtils.hashPassword(password));
+            ResultSet rs = ps.executeQuery();
+            System.out.println(PasswordUtils.hashPassword(password));
+            if (rs.next()) {
+                user = new Utilisateur();
+                user.setIdUtilisateur(rs.getInt("id_utilisateur"));
+                user.setNom(rs.getString("nom"));
+                user.setPrenom(rs.getString("prenom"));
+                user.setEmail(rs.getString("email"));
+                user.setMotDePasse(rs.getString("mot_de_passe"));
+                user.setEtat(rs.getInt("etat"));
+            }
+
+            rs.close();
+            ps.close();
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (valid)
+                con.close();
+        }
+        return user;
+    }
+
+    public boolean ajouterPortefeuille(Connection con) throws Exception {
+        boolean valid = false;
+        boolean result = false;
+
+        try {
+            if (con == null) {
+                con = Connect.connectDB();
+                valid = true;
+            }
+
+            String sql = "INSERT INTO portefeuille (id_utilisateur, monnaie, date) VALUES (?, ?, ?)";
+            try (PreparedStatement pst = con.prepareStatement(sql)) {
+                pst.setInt(1, this.getIdUtilisateur());
+                pst.setDouble(2, this.getMonnaie());
+                pst.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
+
+                int rows = pst.executeUpdate();
+                if (rows > 0) {
+                    result = true;
+                }
+            }
+
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (valid)
+                con.close();
+        }
+
+        return result;
+    }
+
+    public Portefeuille[] historiquePortefeuille(int idUtilisateur, Connection con) throws Exception {
+        ArrayList<Portefeuille> list = new ArrayList<>();
+        boolean valid = false;
+
+        try {
+            if (con == null) {
+                con = Connect.connectDB();
+                valid = true;
+            }
+
+            String sql = "SELECT * FROM portefeuille WHERE id_utilisateur = ? ORDER BY date DESC";
+            try (PreparedStatement pst = con.prepareStatement(sql)) {
+                pst.setInt(1, idUtilisateur);
+                ResultSet rs = pst.executeQuery();
+                while (rs.next()) {
+                    int id = rs.getInt("id_portefeuille");
+                    double monnaie = rs.getDouble("monnaie");
+                    Timestamp date = rs.getTimestamp("date");
+                    Utilisateur user = new Utilisateur().getById(idUtilisateur, con);
+                    list.add(new Portefeuille(id, user, monnaie, date));
+                }
+            }
+
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (valid)
+                con.close();
+        }
+
+        return list.toArray(new Portefeuille[0]);
     }
 
 }
