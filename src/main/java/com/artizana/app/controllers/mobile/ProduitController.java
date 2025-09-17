@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+import com.artizana.app.models.MouvementStock;
 import com.artizana.app.models.PhotoProduit;
 import com.artizana.app.models.PrixProduit;
 import com.artizana.app.models.Produit;
@@ -53,6 +54,8 @@ public class ProduitController {
     produit.setPhotosProduit(photos);
     PrixProduit prix = produit.getPrix(null);
     produit.setPrixProduit(prix);
+    MouvementStock mouvementStock = produit.getEtatStock(null);
+    produit.setEtatStock(mouvementStock);
     return produit;
   }
 
