@@ -47,3 +47,99 @@ CREATE OR REPLACE VIEW v_produit_avec_stock AS (
     JOIN v_stock_produit v on p.id_produit = v.id_produit
 );
 
+CREATE OR REPLACE VIEW v_commission AS (
+    SELECT *
+    FROM commission 
+    WHERE date_fin is not NULL 
+);
+
+CREATE OR REPLACE VIEW v_facture_non_validee AS (
+    SELECT *
+    FROM facture f 
+    WHERE f.etat = 0 
+);
+
+CREATE OR REPLACE VIEW v_facture_by_day AS (
+    SELECT f.date , COUNT(*) nombre 
+    FROM v_facture_non_validee f 
+    GROUP BY f.date
+);
+
+CREATE OR REPLACE VIEW v_facture_by_month AS (
+    SELECT 
+    EXTRACT(YEAR FROM f.date) AS annee,
+    EXTRACT(MONTH FROM f.date) AS mois,
+    COUNT(*) AS nb_factures
+    FROM v_facture_non_validee f 
+    GROUP BY EXTRACT(YEAR FROM f.date), EXTRACT(MONTH FROM f.date)
+    ORDER BY annee, mois
+);
+
+CREATE OR REPLACE VIEW v_facture_by_year AS (
+    SELECT EXTRACT(YEAR FROM f.date) AS annee , COUNT(*) AS nb_factures
+    FROM v_facture_non_validee f
+    GROUP BY EXTRACT(YEAR FROM f.date)
+);
+
+CREATE OR REPLACE VIEW v_vola_miditra_day AS (
+    SELECT v.date , SUM(v.vola) vola 
+    FROM vola_miditra v 
+    GROUP BY v.date
+);
+
+CREATE OR REPLACE VIEW v_vola_miditra_month AS (
+    SELECT 
+        EXTRACT(YEAR FROM f.date) AS annee,
+        EXTRACT(MONTH FROM f.date) AS mois,
+        SUM(f.vola) vola
+    FROM vola_miditra f 
+    GROUP BY EXTRACT(YEAR FROM f.date), EXTRACT(MONTH FROM f.date)
+    ORDER BY annee, mois
+);
+
+CREATE OR REPLACE VIEW v_vola_miditra_year AS (
+    SELECT 
+        EXTRACT(YEAR FROM f.date) AS annee,
+        SUM(f.vola) vola
+    FROM vola_miditra f 
+    GROUP BY EXTRACT(YEAR FROM f.date)
+);
+
+CREATE OR REPLACE VIEW v_produit_mieux_vendu AS 
+SELECT 
+    p.intitule, 
+    SUM(df.quantite) AS total_vendu
+FROM Details_facture df
+JOIN produit p ON p.id_produit = df.id_produit
+GROUP BY p.intitule
+ORDER BY total_vendu DESC;
+
+
+CREATE OR REPLACE VIEW v_produit_vendu_week AS (
+    SELECT 
+        p.intitule,
+        EXTRACT(YEAR FROM f.date) AS annee,
+        EXTRACT(WEEK FROM f.date) AS semaine,
+        SUM(df.quantite) AS total_vendu
+    FROM Details_facture df
+    JOIN facture f ON f.id_facture = df.id_facture
+    JOIN produit p ON p.id_produit = df.id_produit
+    GROUP BY p.intitule, EXTRACT(YEAR FROM f.date), EXTRACT(WEEK FROM f.date)
+    ORDER BY annee, semaine, p.intitule
+);
+
+CREATE OR REPLACE VIEW v_produit_vendu_month AS (
+    SELECT 
+        p.intitule,
+        EXTRACT(YEAR FROM f.date) AS annee,
+        EXTRACT(MONTH FROM f.date) AS mois,
+        SUM(df.quantite) AS total_vendu
+    FROM Details_facture df
+    JOIN facture f ON f.id_facture = df.id_facture
+    JOIN produit p ON p.id_produit = df.id_produit
+    GROUP BY p.intitule, EXTRACT(YEAR FROM f.date), EXTRACT(MONTH FROM f.date)
+    ORDER BY annee, mois, p.intitule
+);
+
+
+

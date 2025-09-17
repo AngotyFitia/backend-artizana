@@ -5,7 +5,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class Facture {
 
@@ -245,4 +252,324 @@ public class Facture {
         }
         return count;
     }
+
+    public double getCommission(Connection connection) throws Exception {
+        double commission = 0.0;
+        boolean valid = false;
+        try {
+            if (connection == null) {
+                connection = Connect.connectDB();
+                valid = true;
+            }
+            String sql = "SELECT commission FROM commission WHERE date_fin IS NOT NULL ORDER BY date_fin DESC LIMIT 1";
+            try (PreparedStatement ps = connection.prepareStatement(sql);
+                    ResultSet rs = ps.executeQuery()) {
+
+                if (rs.next()) {
+                    commission = rs.getDouble("commission");
+                }
+
+            }
+
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (valid)
+                connection.close();
+        }
+
+        return commission;
+    }
+
+    public double getVola(double commission, int total) {
+        return total * commission / 100;
+    }
+
+    public void insertVola_miditra(Connection con, double vola) {
+        boolean valid = true;
+        PreparedStatement pst = null;
+
+        try {
+            if (con == null) {
+                con = Connect.connectDB();
+                valid = false;
+            }
+
+            String sql = "INSERT INTO vola_miditra (\"date\", vola) VALUES (CURRENT_TIMESTAMP, ?)";
+            pst = con.prepareStatement(sql);
+            pst.setDouble(1, vola);
+
+            int rows = pst.executeUpdate();
+            System.out.println("Insertion réussie, lignes affectées : " + rows);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pst != null) {
+                    pst.close();
+                }
+                if (!valid && con != null) {
+                    con.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static List<Map<String, Object>> getByDay(Connection con, LocalDate filterDate) throws Exception {
+        List<Map<String, Object>> list = new ArrayList<>();
+        boolean valid = true;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            if (con == null) {
+                con = Connect.connectDB();
+                valid = false;
+            }
+
+            if (filterDate == null) {
+                filterDate = LocalDate.now();
+            }
+
+            String sql = "SELECT * FROM v_facture_by_day WHERE date = ?";
+            ps = con.prepareStatement(sql);
+            ps.setDate(1, java.sql.Date.valueOf(filterDate));
+
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("date", rs.getDate("date"));
+                map.put("nombre", rs.getInt("nombre"));
+                list.add(map);
+            }
+
+        } finally {
+            if (rs != null)
+                rs.close();
+            if (ps != null)
+                ps.close();
+            if (!valid && con != null)
+                con.close();
+        }
+
+        return list;
+    }
+
+    public static List<Map<String, Object>> getByYear(Connection con, Integer filterYear) throws Exception {
+        List<Map<String, Object>> list = new ArrayList<>();
+        boolean valid = true;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            if (con == null) {
+                con = Connect.connectDB();
+                valid = false;
+            }
+
+            if (filterYear == null) {
+                filterYear = LocalDate.now().getYear();
+            }
+
+            String sql = "SELECT * FROM v_facture_by_year WHERE annee = ?";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, filterYear);
+
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("annee", rs.getInt("annee"));
+                map.put("nb_factures", rs.getInt("nb_factures"));
+                list.add(map);
+            }
+
+        } finally {
+            if (rs != null)
+                rs.close();
+            if (ps != null)
+                ps.close();
+            if (!valid && con != null)
+                con.close();
+        }
+
+        return list;
+    }
+
+    public static List<Map<String, Object>> getByMonth(Connection con, Integer filterYear, Integer filterMonth)
+            throws Exception {
+        List<Map<String, Object>> list = new ArrayList<>();
+        boolean valid = true;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            if (con == null) {
+                con = Connect.connectDB();
+                valid = false;
+            }
+
+            if (filterYear == null) {
+                filterYear = LocalDate.now().getYear();
+            }
+
+            if (filterMonth == null) {
+                filterMonth = LocalDate.now().getMonthValue();
+            }
+
+            String sql = "SELECT * FROM v_facture_by_month WHERE annee = ? AND mois = ?";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, filterYear);
+            ps.setInt(2, filterMonth);
+
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("annee", rs.getInt("annee"));
+                map.put("mois", Month.of(rs.getInt("mois")).getDisplayName(TextStyle.FULL, Locale.FRENCH));
+                map.put("nb_factures", rs.getInt("nb_factures"));
+                list.add(map);
+            }
+
+        } finally {
+            if (rs != null)
+                rs.close();
+            if (ps != null)
+                ps.close();
+            if (!valid && con != null)
+                con.close();
+        }
+
+        return list;
+    }
+
+    // Par jour
+    public static List<Map<String, Object>> getVolaByDay(Connection con, LocalDate filterDate) throws Exception {
+        List<Map<String, Object>> list = new ArrayList<>();
+        boolean valid = true;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            if (con == null) {
+                con = Connect.connectDB();
+                valid = false;
+            }
+
+            if (filterDate == null) {
+                filterDate = LocalDate.now();
+            }
+
+            String sql = "SELECT * FROM v_vola_miditra_day WHERE date = ?";
+            ps = con.prepareStatement(sql);
+            ps.setDate(1, java.sql.Date.valueOf(filterDate));
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("date", rs.getDate("date"));
+                map.put("vola", rs.getDouble("vola"));
+                list.add(map);
+            }
+
+        } finally {
+            if (rs != null)
+                rs.close();
+            if (ps != null)
+                ps.close();
+            if (!valid && con != null)
+                con.close();
+        }
+
+        return list;
+    }
+
+    // Par mois
+    public static List<Map<String, Object>> getVolaByMonth(Connection con, Integer year, Integer month)
+            throws Exception {
+        List<Map<String, Object>> list = new ArrayList<>();
+        boolean valid = true;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            if (con == null) {
+                con = Connect.connectDB();
+                valid = false;
+            }
+
+            LocalDate today = LocalDate.now();
+            if (year == null)
+                year = today.getYear();
+            if (month == null)
+                month = today.getMonthValue();
+
+            String sql = "SELECT * FROM v_vola_miditra_month WHERE annee = ? AND mois = ?";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, year);
+            ps.setInt(2, month);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("annee", rs.getInt("annee"));
+                map.put("mois", rs.getInt("mois"));
+                map.put("vola", rs.getDouble("vola"));
+                list.add(map);
+            }
+
+        } finally {
+            if (rs != null)
+                rs.close();
+            if (ps != null)
+                ps.close();
+            if (!valid && con != null)
+                con.close();
+        }
+
+        return list;
+    }
+
+    // Par année
+    public static List<Map<String, Object>> getVolaByYear(Connection con, Integer year) throws Exception {
+        List<Map<String, Object>> list = new ArrayList<>();
+        boolean valid = true;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            if (con == null) {
+                con = Connect.connectDB();
+                valid = false;
+            }
+
+            if (year == null)
+                year = LocalDate.now().getYear();
+
+            String sql = "SELECT * FROM v_vola_miditra_year WHERE annee = ?";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, year);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("annee", rs.getInt("annee"));
+                map.put("vola", rs.getDouble("vola"));
+                list.add(map);
+            }
+
+        } finally {
+            if (rs != null)
+                rs.close();
+            if (ps != null)
+                ps.close();
+            if (!valid && con != null)
+                con.close();
+        }
+
+        return list;
+    }
+
 }

@@ -80,9 +80,38 @@ uri="http://java.sun.com/jsp/jstl/core" %>
             </a>
             <ul class="navbar-nav mr-auto">
               <li class="nav-item">
-                <a class="nav-link" href="widgets.html">
+                <a class="nav-link" href="#">
                   <span class="ml-lg-2">Accueil</span>
                 </a>
+              </li>
+              <li class="nav-item dropdown">
+                <a
+                  href="#"
+                  id="dashboardDropdown"
+                  class="dropdown-toggle nav-link"
+                  role="button"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <span class="ml-lg-2">Tableau de bord</span
+                  ><span class="sr-only">(current)</span>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dashboardDropdown">
+                  <%
+                    if (user != null && user.getEtat() == 0) {
+                %>
+                  <a class="nav-link pl-lg-2" href="/dashboard/factures"
+                    ><span class="ml-1">Facture </span></a
+                  >
+                  <a class="nav-link pl-lg-2" href="/dashboard/vola"
+                    ><span class="ml-1">Chiffre d'affaire </span></a
+                  >
+                  <a class="nav-link pl-lg-2" href="/dashboard/produits-vendus"
+                    ><span class="ml-1">Produit </span></a
+                  >
+                  <%}%>
+                </div>
               </li>
               <li class="nav-item dropdown">
                 <a

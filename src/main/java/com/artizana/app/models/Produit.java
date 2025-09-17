@@ -1,11 +1,16 @@
 package com.artizana.app.models;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.temporal.WeekFields;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 public class Produit {
@@ -492,6 +497,119 @@ public class Produit {
         }
         System.out.println(list_produit.size());
         return list_produit.toArray(new Produit[0]);
+    }
+
+    public static List<Map<String, Object>> getProduitVenduByWeek(Connection con, Integer year, Integer week)
+            throws Exception {
+        List<Map<String, Object>> list = new ArrayList<>();
+        boolean valid = true;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            if (con == null) {
+                con = Connect.connectDB();
+                valid = false;
+            }
+
+            // valeurs par défaut : année et semaine courantes
+            LocalDate now = LocalDate.now();
+            WeekFields wf = WeekFields.ISO;
+            if (year == null)
+                year = now.getYear();
+            if (week == null)
+                week = now.get(wf.weekOfWeekBasedYear());
+
+            String sql = "SELECT intitule, annee, semaine, total_vendu FROM v_produit_vendu_week WHERE annee = ? AND semaine = ? ORDER BY total_vendu DESC";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, year);
+            ps.setInt(2, week);
+
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Map<String, Object> m = new HashMap<>();
+                m.put("intitule", rs.getString("intitule"));
+                m.put("annee", rs.getInt("annee"));
+                m.put("semaine", rs.getInt("semaine"));
+                m.put("total_vendu", rs.getInt("total_vendu"));
+                list.add(m);
+            }
+
+        } finally {
+            if (rs != null)
+                try {
+                    rs.close();
+                } catch (Exception ignored) {
+                }
+            if (ps != null)
+                try {
+                    ps.close();
+                } catch (Exception ignored) {
+                }
+            if (!valid && con != null)
+                try {
+                    con.close();
+                } catch (Exception ignored) {
+                }
+        }
+
+        return list;
+    }
+
+    public static List<Map<String, Object>> getProduitVenduByMonth(Connection con, Integer year, Integer month)
+            throws Exception {
+        List<Map<String, Object>> list = new ArrayList<>();
+        boolean valid = true;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            if (con == null) {
+                con = Connect.connectDB();
+                valid = false;
+            }
+
+            // valeurs par défaut : année et mois courants
+            LocalDate now = LocalDate.now();
+            if (year == null)
+                year = now.getYear();
+            if (month == null)
+                month = now.getMonthValue();
+
+            String sql = "SELECT intitule, annee, mois, total_vendu FROM v_produit_vendu_month WHERE annee = ? AND mois = ? ORDER BY total_vendu DESC";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, year);
+            ps.setInt(2, month);
+
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Map<String, Object> m = new HashMap<>();
+                m.put("intitule", rs.getString("intitule"));
+                m.put("annee", rs.getInt("annee"));
+                m.put("mois", rs.getInt("mois"));
+                m.put("total_vendu", rs.getInt("total_vendu"));
+                list.add(m);
+            }
+
+        } finally {
+            if (rs != null)
+                try {
+                    rs.close();
+                } catch (Exception ignored) {
+                }
+            if (ps != null)
+                try {
+                    ps.close();
+                } catch (Exception ignored) {
+                }
+            if (!valid && con != null)
+                try {
+                    con.close();
+                } catch (Exception ignored) {
+                }
+        }
+
+        return list;
     }
 
 }

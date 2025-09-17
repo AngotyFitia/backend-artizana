@@ -111,3 +111,18 @@ ALTER TABLE portefeuille
 ADD COLUMN "date" TIMESTAMP;
 
 
+CREATE TABLE commission (
+    id SERIAL PRIMARY KEY , 
+    commission DOUBLE PRECISION ,
+    date_debut DATE ,
+    date_fin DATE 
+);
+
+
+CREATE TABLE vola_miditra (
+    id SERIAL PRIMARY KEY , 
+    "date" TIMESTAMP,
+    vola DOUBLE PRECISION  
+);
+
+
