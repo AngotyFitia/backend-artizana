@@ -280,7 +280,7 @@ public class Produit {
                 con = Connect.connectDB();
                 valid = false;
             }
-            String sql = "SELECT * FROM produit WHERE etat=1 AND etat_validation = 10";
+            String sql = "SELECT * FROM v_produit_avec_stock WHERE etat=1 AND etat_validation = 10";
             state = con.createStatement();
             System.out.println(sql);
             result = state.executeQuery(sql);
@@ -291,6 +291,9 @@ public class Produit {
                 String intitule = result.getString("intitule");
                 int etat = result.getInt("etat");
                 Produit produit = new Produit(id, intitule, categorie, societe, etat);
+                MouvementStock m = new MouvementStock();
+                m.setQuantiteActuel(result.getInt("stock"));
+                produit.setEtatStock(m);
                 liste.add(produit);
             }
         } catch (Exception e) {

@@ -34,4 +34,16 @@ CREATE OR REPLACE VIEW v_stock_produit AS(
     ORDER BY p.id_produit
 );
 
+CREATE OR REPLACE VIEW v_produit AS (
+    SELECT * FROM produit WHERE etat_validation = 10
+);
+
+CREATE OR REPLACE VIEW v_produit_avec_stock AS (
+    SELECT p.*, CASE 
+                    WHEN v.stock_actuel IS NULL THEN 0 
+                    ELSE v.stock_actuel
+                END stock
+    FROM v_produit p 
+    JOIN v_stock_produit v on p.id_produit = v.id_produit
+);
 
