@@ -1,7 +1,7 @@
 services:
   - type: web
-    name: backend-artizana      # nom du service sur Render
-    env: java
-    branch: master              # ou 'main' selon ton dépôt
+    name: backend-artizana
+    branch: master       
+    runtime: java
     buildCommand: mvn clean package
     startCommand: java -jar target/app-0.0.1-SNAPSHOT.jar
