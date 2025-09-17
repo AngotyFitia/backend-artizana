@@ -18,45 +18,58 @@ import com.artizana.app.models.PrixProduit;
 import com.artizana.app.models.Produit;
 import com.artizana.app.models.Societe;
 import com.artizana.app.models.Utilisateur;
+
+import ch.qos.logback.core.model.Model;
+import jakarta.servlet.http.HttpSession;
+
 import com.artizana.app.models.Categorie;
 
-@CrossOrigin(origins="*", allowedHeaders="*")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("api/web")
 public class ProduitServlet {
 
-    @GetMapping("/liste-produits")
-    public ModelAndView afficherProduits() throws Exception {
+  @GetMapping("/liste-produits")
+  public ModelAndView afficherProduits() throws Exception {
+    Produit produit = new Produit();
+    System.out.println("Liste des produits");
+    Societe societe = new Societe();
+    Categorie categorie = new Categorie();
+    Produit[] liste = produit.getAll(null);
+    Societe[] societes = societe.getAll(null);
+    Categorie[] categories = categorie.getAll(null);
+    ModelAndView model = new ModelAndView("liste-produits");
+    model.addObject("societes", societes);
+    model.addObject("categories", categories);
+    model.addObject("produits", liste);
+    return model;
+  }
+
+  @PostMapping("/ajout-produit")
+  public ModelAndView traiterAjout(
+      @RequestParam("idCategorie") int idCategorie, @RequestParam("intitule") String intitule, HttpSession session)
+      throws Exception {
+    ModelAndView mv = new ModelAndView();
+    Utilisateur user = (Utilisateur) session.getAttribute("utilisateur");
+    if (user.getEtat() == 10) {
       Produit produit = new Produit();
-      System.out.println("Liste des produits");
-      Societe societe = new Societe();
-      Categorie categorie = new Categorie();
-      Produit[] liste = produit.getAll(null);
-      Societe[] societes = societe.getAll(null);
-      Categorie[] categories = categorie.getAll(null);
-      ModelAndView model = new ModelAndView("liste-produits");
-      model.addObject("societes", societes);
-      model.addObject("categories", categories);
-      model.addObject("produits", liste);
-      return model;
+      Societe societe = new Societe().getSocieteByIdUtilisateur(user.getIdUtilisateur(), null);
+      Categorie categorie = new Categorie().getById(idCategorie, null);
+      produit.setSociete(societe);
+      produit.setCategorie(categorie);
+      produit.setIntitule(intitule);
+      produit.insert(null);
+      return new ModelAndView("redirect:/api/web/liste-produits");
     }
 
-    @PostMapping("/ajout-produit")
-    public ModelAndView traiterAjout(@RequestParam("idSociete") int idSociete,
-                        @RequestParam("idCategorie") int idCategorie, @RequestParam("intitule") String intitule) throws Exception {
-        Produit produit = new Produit();
-        Societe societe = new Societe().getById(idSociete, null);
-        Categorie categorie = new Categorie().getById(idCategorie, null);
-        produit.setSociete(societe);
-        produit.setCategorie(categorie);
-        produit.setIntitule(intitule);
-        produit.insert(null);
-        return new ModelAndView("redirect:/api/web/liste-produits");
-   }
+    mv.setViewName("index");
+    mv.addObject("error", "Vous n'avez pas le droit d'ajouter un produit");
+    return mv;
+  }
 
   @PostMapping("/produit-photo-form")
   public PhotoProduit ajoutPhoto(@RequestParam("id_produit") int idProduit,
-                      @RequestParam(value = "photo", required = false) MultipartFile photo)throws Exception{
+      @RequestParam(value = "photo", required = false) MultipartFile photo) throws Exception {
     PhotoProduit imagePhoto = new PhotoProduit();
     Produit produit = new Produit();
     produit.setIdProduit(idProduit);
@@ -65,13 +78,14 @@ public class ProduitServlet {
     if (photo != null && !photo.isEmpty()) {
       byte[] photoBytes = photo.getBytes();
       System.out.println("Image length: " + photoBytes.length);
-      imagePhoto.setPhoto(photoBytes); 
+      imagePhoto.setPhoto(photoBytes);
     }
-      return imagePhoto.insert(null);
+    return imagePhoto.insert(null);
   }
 
   @PostMapping("/produit-prix-form")
-  public PrixProduit ajoutPrix(@RequestParam("id_produit") int idProduit, @RequestParam("prix") double prix)throws Exception{
+  public PrixProduit ajoutPrix(@RequestParam("id_produit") int idProduit, @RequestParam("prix") double prix)
+      throws Exception {
     PrixProduit prixProduit = new PrixProduit();
     Produit produit = new Produit();
     produit.setIdProduit(idProduit);
@@ -79,5 +93,5 @@ public class ProduitServlet {
     prixProduit.setPrix(prix);
     return prixProduit.insert(null);
   }
-   
+
 }

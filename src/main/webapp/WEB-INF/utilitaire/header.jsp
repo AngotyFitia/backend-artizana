@@ -1,8 +1,13 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-pageEncoding="UTF-8"%> <%@ taglib prefix="c"
+<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ taglib prefix="c"
 uri="http://java.sun.com/jsp/jstl/core" %> <%@ taglib prefix="liste"
 uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="com.artizana.app.models.Utilisateur" %>
+
+<%
+    Utilisateur user = (Utilisateur) session.getAttribute("utilisateur");
+    
+%>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -126,9 +131,16 @@ uri="http://java.sun.com/jsp/jstl/core" %>
                   class="dropdown-menu"
                   aria-labelledby="ui-elementsDropdown"
                 >
-                  <a class="nav-link pl-lg-2" href="./ui-color.html"
-                    ><span class="ml-1">Catégories</span></a
-                  >
+                <%
+                    if (user != null && user.getEtat() == 0) {
+                %>
+                    <a class="nav-link pl-lg-2" href="/api/web/categories/liste-categories">
+                        <span class="ml-1">Catégories</span>
+                    </a>
+                <%
+                    }
+                %>
+
                   <a class="nav-link pl-lg-2" href="/api/web/liste-societes">
                     <span class="ml-1">Sociétés</span>
                   </a>
@@ -173,7 +185,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
                 aria-labelledby="navbarDropdownMenuLink"
               >
                 <li class="nav-item">
-                  <a class="nav-link pl-3" href="#">Settings</a>
+                  <a class="nav-link pl-3" href="/logout">Déconnexion</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link pl-3" href="#">Profile</a>
@@ -187,14 +199,19 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         </div>
       </nav>
     </div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
-<script>
-  $(function () {
-    $('.dropdown-toggle').dropdown(); // initialise manuellement
-  });
-</script>
 
-  </body>
-</html>
+    <main role="main" class="main-content">
+        <div class="container-fluid">
+          <div class="row justify-content-center">
+            <div class="col-12">
+              <div class="row align-items-center mb-2">
+                <div class="col">
+                  <h2 class="h5 page-title">Tongasoa , Bienvenue , Welcome !</h2>
+                </div>
+              </div>
+              <div class="mb-2 align-items-center">
+                <div class="card shadow mb-4">
+                  <div class="card-body">
+
+
+

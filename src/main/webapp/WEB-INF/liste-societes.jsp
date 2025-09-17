@@ -39,7 +39,20 @@
                       <td><%= p.getNom() %></td>
                       <td><%= p.getTitre() %></td>
                       <td><%= p.getHistoire() %></td> 
-                      <td><img src="<%= request.getContextPath() + "/api/mobile/societe/image/" + p.getIdSociete() %>" width="100" height="100" /></td>
+<%
+    String base64Photo = "";
+    if (p.getPhoto() != null) {
+        base64Photo = java.util.Base64.getEncoder().encodeToString(p.getPhoto());
+    }
+%>
+<td>
+    <img 
+        src="data:image/jpeg;base64,<%= base64Photo %>" 
+        width="100" 
+        height="100" 
+        alt="Photo société"
+    />
+</td>
                       <td>
                         <button class="btn btn-sm dropdown-toggle more-horizontal" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                           <span class="text-muted sr-only">Action</span>

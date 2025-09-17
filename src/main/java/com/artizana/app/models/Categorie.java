@@ -100,46 +100,50 @@ public class Categorie {
     }
 
     public Categorie[] getAll(Connection con) throws Exception {
-        Vector<Categorie> liste = new Vector<Categorie>();
+        ArrayList<Categorie> list = new ArrayList<>();
         boolean valid = true;
-        Statement state = null;
-        ResultSet result = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
         try {
             if (con == null) {
                 con = Connect.connectDB();
                 valid = false;
             }
-            String sql = "SELECT * FROM categorie WHERE ETAT=1";
-            state = con.createStatement();
+
+            String sql = "SELECT id_categorie, intitule, etat FROM categorie WHERE etat = ?";
+            pstmt = con.prepareStatement(sql);
+            pstmt.setInt(1, 1);
             System.out.println(sql);
-            result = state.executeQuery(sql);
-            while (result.next()) {
-                int id = result.getInt("id_categorie");
-                String intitule = result.getString("intitule");
-                int etat = result.getInt("etat");
+
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                int id = rs.getInt("id_categorie");
+                String intitule = rs.getString("intitule");
+                int etat = rs.getInt("etat");
+
                 Categorie categorie = new Categorie(id, intitule, etat);
-                liste.add(categorie);
+                list.add(categorie);
             }
+
         } catch (Exception e) {
             e.printStackTrace();
+            throw e;
         } finally {
             try {
-                if (state != null) {
-                    state.close();
-                }
-                if (result != null) {
-                    result.close();
-                }
-                if (valid == false || con != null) {
+                if (rs != null)
+                    rs.close();
+                if (pstmt != null)
+                    pstmt.close();
+                if (!valid && con != null)
                     con.close();
-                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        Categorie[] categories = new Categorie[liste.size()];
-        liste.toArray(categories);
-        return categories;
+
+        return list.toArray(new Categorie[0]);
     }
 
 }
