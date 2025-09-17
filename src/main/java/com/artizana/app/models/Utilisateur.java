@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Vector;
 
 import com.artizana.utils.PasswordUtils;
 
@@ -271,4 +272,49 @@ public class Utilisateur {
         return list.toArray(new Portefeuille[0]);
     }
 
+    public Facture[] getFactureParSociete( Connection con) throws Exception{
+        Vector<Facture> liste = new Vector<Facture>();
+        boolean valid = true;
+        Statement state = null;
+        ResultSet result = null;
+        try {
+            if (con == null) {
+                con = Connect.connectDB();
+                valid = false;
+            }
+            String sql = "SELECT * FROM v_total_facture WHERE id_utilisateur="+this.getIdUtilisateur();
+            state = con.createStatement();
+            System.out.println(sql);
+            result = state.executeQuery(sql);
+            while (result.next()) {
+                int id = result.getInt("id_facture");
+                Utilisateur utilisateur = new Utilisateur().getById(result.getInt("id_utilisateur"), null);
+                Societe societe = new Societe().getById(result.getInt("id_societe"),null);
+                Timestamp date = result.getTimestamp("date");
+                int total=result.getInt("total_calcule");
+                int etat = result.getInt("etat");
+                Facture facture = new Facture(id, utilisateur, societe, date, total, etat);
+                liste.add(facture);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (state != null) {
+                    state.close();
+                }
+                if (result != null) {
+                    result.close();
+                }
+                if (valid == false || con != null) {
+                    con.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        Facture[] factures = new Facture[liste.size()];
+        liste.toArray(factures);
+        return factures;
+    }
 }

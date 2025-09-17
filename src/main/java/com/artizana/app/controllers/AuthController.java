@@ -80,7 +80,6 @@ public class AuthController {
         }
     }
 
-
     @GetMapping("/logout")
     public ModelAndView logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
@@ -88,5 +87,16 @@ public class AuthController {
             session.invalidate();
         }
         return new ModelAndView("index");
+    }
+
+    @GetMapping("/logout-mobile")
+    public ResponseEntity<?> logoutMobile(HttpServletRequest request) {
+        HttpSession session = request.getSession(false); // ne crée pas une session si elle n'existe pas
+
+        if (session != null) {
+            session.invalidate();
+        }
+
+        return ResponseEntity.ok("Déconnexion réussie"); // ou ResponseEntity.noContent().build();
     }
 }

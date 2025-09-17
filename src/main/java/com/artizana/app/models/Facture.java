@@ -151,7 +151,7 @@ public class Facture {
         }
         return idFacture;
     }
-
+    
     public Facture[] getFactureNonValider(Connection con, int page, int pageSize) throws Exception {
         ArrayList<Facture> list = new ArrayList<>();
         boolean valid = false;
