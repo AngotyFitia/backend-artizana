@@ -1,0 +1,14 @@
+# Use OpenJDK image
+FROM openjdk:17-jdk-slim
+
+# Set working directory
+WORKDIR /app
+
+# Copy Maven build output
+COPY target/artizana.jar app.jar
+
+# Expose port
+EXPOSE 2222
+
+# Run app
+ENTRYPOINT ["java", "-jar", "app.jar"]
