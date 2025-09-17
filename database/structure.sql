@@ -55,7 +55,7 @@ CREATE TABLE Photo_produit(
 );
 
 CREATE TABLE Mouvement_stock(
-    id_mouvement SERIAL PRIMARY KEY,
+    id_mouvement_stock SERIAL PRIMARY KEY,
     id_produit INTEGER,
     quantite_entree INTEGER,
     quantite_sortie INTEGER,
@@ -73,16 +73,16 @@ CREATE TABLE Portefeuille(
 CREATE TABLE Facture(
     id_facture SERIAL PRIMARY KEY,
     id_utilisateur INTEGER,
+    id_societe INTEGER,
     "date" DATE,
-    total DOUBLE PRECISION,
+    total INTEGER,
     etat INTEGER,
-    FOREIGN KEY(id_utilisateur) REFERENCES Utilisateur(id_utilisateur)
+    FOREIGN KEY(id_utilisateur) REFERENCES Utilisateur(id_utilisateur),
+    FOREIGN KEY(id_societe) REFERENCES Societe(id_societe)
 );
-ALTER TABLE Facture ADD COLUMN id_societe INTEGER REFERENCES Societe(id_societe);
-
 
 CREATE TABLE Details_facture(
-    id_details SERIAL PRIMARY KEY,
+    id_details_facture SERIAL PRIMARY KEY,
     id_facture INTEGER,
     id_produit INTEGER,
     quantite INTEGER,
