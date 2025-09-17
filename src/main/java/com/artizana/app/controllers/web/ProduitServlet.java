@@ -94,4 +94,68 @@ public class ProduitServlet {
     return prixProduit.insert(null);
   }
 
+  @GetMapping("/validation")
+  public ModelAndView getListNonValid(HttpSession session) {
+    ModelAndView mv = new ModelAndView();
+    try {
+      Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
+      if (utilisateur.getEtat() == 0) {
+        mv.addObject("produits", new Produit().getAllNonValid(null));
+        mv.setViewName("produits/validation");
+      } else {
+        mv.addObject("error", "Accès refusé");
+        mv.setViewName("index");
+      }
+    } catch (Exception e) {
+      mv.addObject("error", e);
+      mv.setViewName("produits/validation");
+    }
+    return mv;
+  }
+
+  @GetMapping("/produit/valider/{id}")
+  public ModelAndView validerProduit(@PathVariable("id") int idProduit, HttpSession session) {
+    ModelAndView mv = new ModelAndView();
+    try {
+      Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
+
+      if (utilisateur != null && utilisateur.getEtat() == 0) {
+        boolean ok = new Produit().validerProduit(idProduit, null);
+
+        if (ok) {
+          mv.addObject("success", "Produit validé avec succès !");
+        } else {
+          mv.addObject("error", "Échec de la validation du produit.");
+        }
+
+        mv.addObject("produits", new Produit().getAllNonValid(null));
+        mv.setViewName("produits/validation");
+
+      } else {
+        mv.addObject("error", "Accès refusé");
+        mv.setViewName("index");
+      }
+
+    } catch (Exception e) {
+      mv.addObject("error", e.getMessage());
+      mv.setViewName("produits/validation");
+    }
+
+    return mv;
+  }
+
+  @GetMapping("/ajout-stock")
+  public ModelAndView ajoutEnStock(HttpSession session, @RequestParam("id") int id) {
+    ModelAndView mv = new ModelAndView();
+    Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
+    if (utilisateur.getEtat() == 10) {
+      mv.addObject("id", id);
+      mv.setViewName("produits/stock");
+    } else {
+      mv.addObject("error", "Accès refusé");
+      mv.setViewName("index");
+    }
+    return mv;
+  }
+
 }

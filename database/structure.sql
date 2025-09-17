@@ -106,3 +106,8 @@ CREATE TABLE Avis_client(
 
 ALTER TABLE produit
 ADD COLUMN etat_validation INTEGER DEFAULT 0;
+
+ALTER TABLE portefeuille
+ADD COLUMN "date" TIMESTAMP;
+
+

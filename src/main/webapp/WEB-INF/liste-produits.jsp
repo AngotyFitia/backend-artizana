@@ -27,6 +27,16 @@
                   <div class="mr-3"><button type="button" class="btn btn-primary">Importer les données</button></div>
                   <div><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#varyModal" data-whatever="@mdo">Ajouter</button></div>
                 </div>    
+                <%}%>  
+                <%
+                    if (user != null && user.getEtat() == 0) {
+                %>
+                <div class="d-flex justify-content-end mb-3">
+                    <a href="/api/web/validation" class="btn btn-lg btn-primary shadow-sm">
+                        <i class="bi bi-check2-square"></i> Les produits à valider
+                    </a>
+                </div>
+                  
                 <%}%>                           
                 <table class="table table-hover">
                   <thead>
@@ -50,13 +60,18 @@
                       <td><%= p.getCategorie().getIntitule() %></td>
                       <td><%= p.getSociete().getNom() %></td> 
                       <td>
+                        <%
+                            if (user != null && user.getEtat() == 10) {
+                        %>
                         <button class="btn btn-sm dropdown-toggle more-horizontal" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                           <span class="text-muted sr-only">Action</span>
                         </button>
                         <div class="dropdown-menu dropdown-menu-right">
                           <a class="dropdown-item" href="/api/web/vue-societe/<%= p.getIdProduit() %>">Editer/Voir</a>
                           <a class="dropdown-item" href="/api/web/supprimer-societe/<%= p.getIdProduit() %>/2">Supprimer</a>
+                          <a class="dropdown-item" href="<%= request.getContextPath() %>/api/web/ajout-stock?id=<%= p.getIdProduit() %>">Ajout en stock</a>
                         </div>
+                        <%}%>
                       </td>
                     </tr>
                     <%  } %> 

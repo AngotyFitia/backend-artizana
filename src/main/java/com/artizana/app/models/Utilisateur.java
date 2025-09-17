@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 
 import com.artizana.utils.PasswordUtils;
 
@@ -14,6 +16,8 @@ public class Utilisateur {
     String email;
     String motDePasse;
     int etat;
+    double monnaie;
+    Timestamp date_monnaie;
 
     public int getIdUtilisateur() {
         return this.idUtilisateur;
@@ -72,6 +76,22 @@ public class Utilisateur {
             throw new Exception("etat invalide: null");
         }
         this.setEtat(a);
+    }
+
+    public double getMonnaie() {
+        return monnaie;
+    }
+
+    public void setMonnaie(double monnaie) {
+        this.monnaie = monnaie;
+    }
+
+    public Timestamp getDate_monnaie() {
+        return date_monnaie;
+    }
+
+    public void setDate_monnaie(Timestamp date_monnaie) {
+        this.date_monnaie = date_monnaie;
     }
 
     public Utilisateur() {
@@ -164,6 +184,71 @@ public class Utilisateur {
                 con.close();
         }
         return user;
+    }
+
+    public boolean ajouterPortefeuille(Connection con) throws Exception {
+        boolean valid = false;
+        boolean result = false;
+
+        try {
+            if (con == null) {
+                con = Connect.connectDB();
+                valid = true;
+            }
+
+            String sql = "INSERT INTO portefeuille (id_utilisateur, monnaie, date) VALUES (?, ?, ?)";
+            try (PreparedStatement pst = con.prepareStatement(sql)) {
+                pst.setInt(1, this.getIdUtilisateur());
+                pst.setDouble(2, this.getMonnaie());
+                pst.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
+
+                int rows = pst.executeUpdate();
+                if (rows > 0) {
+                    result = true;
+                }
+            }
+
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (valid)
+                con.close();
+        }
+
+        return result;
+    }
+
+    public Portefeuille[] historiquePortefeuille(int idUtilisateur, Connection con) throws Exception {
+        ArrayList<Portefeuille> list = new ArrayList<>();
+        boolean valid = false;
+
+        try {
+            if (con == null) {
+                con = Connect.connectDB();
+                valid = true;
+            }
+
+            String sql = "SELECT * FROM portefeuille WHERE id_utilisateur = ? ORDER BY date DESC";
+            try (PreparedStatement pst = con.prepareStatement(sql)) {
+                pst.setInt(1, idUtilisateur);
+                ResultSet rs = pst.executeQuery();
+                while (rs.next()) {
+                    int id = rs.getInt("id_portefeuille");
+                    double monnaie = rs.getDouble("monnaie");
+                    Timestamp date = rs.getTimestamp("date");
+                    Utilisateur user = new Utilisateur().getById(idUtilisateur, con);
+                    list.add(new Portefeuille(id, user, monnaie, date));
+                }
+            }
+
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (valid)
+                con.close();
+        }
+
+        return list.toArray(new Portefeuille[0]);
     }
 
 }

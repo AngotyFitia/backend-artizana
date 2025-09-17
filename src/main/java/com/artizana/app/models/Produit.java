@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Vector;
 
 public class Produit {
@@ -435,6 +436,59 @@ public class Produit {
 
     public void setEtatStock(MouvementStock etatStock) {
         this.etatStock = etatStock;
+    }
+
+    public Produit[] getAllNonValid(Connection con) throws Exception {
+        ArrayList<Produit> list_produit = new ArrayList<>();
+        boolean valid = false;
+        ResultSet rs = null;
+        PreparedStatement prep = null;
+        try {
+            if (con == null) {
+                con = Connect.connectDB();
+                valid = true;
+            }
+
+            String request = "SELECT * FROM produit WHERE etat_validation = ?";
+            prep = con.prepareStatement(request);
+            prep.setInt(1, 0);
+
+            rs = prep.executeQuery();
+
+            while (rs.next()) {
+                int cat = rs.getInt("id_categorie");
+                Categorie categorie = new Categorie().getById(cat, null);
+
+                int s = rs.getInt("id_societe");
+                Societe societe = new Societe().getById(s, null);
+
+                int id = rs.getInt("id_produit");
+                String intitule = rs.getString("intitule");
+                Produit p = new Produit();
+                p.setCategorie(categorie);
+                p.setSociete(societe);
+                p.setIntitule(intitule);
+                p.setIdProduit(id);
+                list_produit.add(p);
+
+            }
+
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            try {
+                if (rs != null)
+                    rs.close();
+                if (prep != null)
+                    prep.close();
+                if (valid && con != null)
+                    con.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println(list_produit.size());
+        return list_produit.toArray(new Produit[0]);
     }
 
 }

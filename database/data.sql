@@ -25,3 +25,14 @@ VALUES (
     0
 );
 
+
+
+INSERT INTO Facture (id_utilisateur, id_societe, "date", total, etat)
+VALUES (
+    3,                     
+    2,                     
+    CURRENT_DATE,          
+    15000,                
+    0                      
+);
+

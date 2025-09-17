@@ -98,9 +98,13 @@ uri="http://java.sun.com/jsp/jstl/core" %>
                   ><span class="sr-only">(current)</span>
                 </a>
                 <div class="dropdown-menu" aria-labelledby="dashboardDropdown">
-                  <a class="nav-link pl-lg-2" href="./index.html"
-                    ><span class="ml-1">Default</span></a
+                  <%
+                    if (user != null && user.getEtat() == 0) {
+                %>
+                  <a class="nav-link pl-lg-2" href="/api/web/factures/nonvalidees"
+                    ><span class="ml-1">à valider </span></a
                   >
+                  <%}%>
                   <a class="nav-link pl-lg-2" href="./dashboard-analytics.html"
                     ><span class="ml-1">Analytics</span></a
                   >
