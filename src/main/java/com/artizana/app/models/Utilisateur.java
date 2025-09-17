@@ -158,13 +158,31 @@ public class Utilisateur {
                 con = Connect.connectDB();
                 valid = true;
             }
-
+            System.out.println("MOT"+password);
+            // Hash du mot de passe
+            String hashedPassword = PasswordUtils.hashPassword(password);
+            System.out.println("hash"+hashedPassword);
+    
+            // Préparer la requête
             String request = "SELECT * FROM utilisateur WHERE email = ? AND mot_de_passe = ?";
+    
+            // Affichage de la requête avant exécution avec les valeurs
+            System.out.println("Requête SQL préparée : " + request);
+            System.out.println("Avec les paramètres : email = " + email + ", mot_de_passe = " + hashedPassword);
+    
+            // Préparer le statement avec les paramètres
             PreparedStatement ps = con.prepareStatement(request);
             ps.setString(1, email);
-            ps.setString(2, PasswordUtils.hashPassword(password));
+            ps.setString(2, hashedPassword);
+            
+            // Afficher la requête complète avec les valeurs (optionnel)
+            String queryWithValues = request
+                .replace("?", "'" + email + "'")
+                .replace("?", "'" + hashedPassword + "'");
+            System.out.println("Requête complète avec les valeurs : " + queryWithValues);
+    
+            // Exécuter la requête
             ResultSet rs = ps.executeQuery();
-            System.out.println(PasswordUtils.hashPassword(password));
             if (rs.next()) {
                 user = new Utilisateur();
                 user.setIdUtilisateur(rs.getInt("id_utilisateur"));
@@ -174,7 +192,8 @@ public class Utilisateur {
                 user.setMotDePasse(rs.getString("mot_de_passe"));
                 user.setEtat(rs.getInt("etat"));
             }
-
+    
+            // Fermer les ressources
             rs.close();
             ps.close();
         } catch (Exception e) {
@@ -185,6 +204,7 @@ public class Utilisateur {
         }
         return user;
     }
+    
 
     public boolean ajouterPortefeuille(Connection con) throws Exception {
         boolean valid = false;

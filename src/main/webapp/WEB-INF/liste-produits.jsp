@@ -14,6 +14,19 @@
         <h2 class="page-title">Liste des produits</h2>
         <% } else { %>
           <h2 class="page-title">Mes produits</h2>
+          <c:if test="${not empty success}">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            ${success}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </c:if>
+
+    <c:if test="${not empty error}">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            ${error}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </c:if>
         <% } %>
         <div class="row">
           <div class="col-md-12 my-4">
@@ -45,6 +58,7 @@
                       <th>Intitule</th>
                       <th>Catégorie</th>
                       <th>Société</th>
+                      <th>En stock</th>
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -59,6 +73,7 @@
                       <td><%= p.getIntitule() %></td>
                       <td><%= p.getCategorie().getIntitule() %></td>
                       <td><%= p.getSociete().getNom() %></td> 
+                      <td><%= p.getEtatStock().getQuantiteActuel() %></td> 
                       <td>
                         <%
                             if (user != null && user.getEtat() == 10) {

@@ -1,7 +1,7 @@
 INSERT INTO Utilisateur(nom, prenom, email, mot_de_passe, etat) 
-            VALUES  ('ANDRIA', 'Nancy', 'nancyandriamahanintsoa@gmail.com', 'nancy', 1), -- admin
-                    ('RABARI', 'Angoty', 'angotyrabarijaona@gmail.com', 'angoty', 2), -- artisan
-                    ('RAKOTO', 'Anne', 'anne@gmail.com', 'anne', 3); -- client
+            VALUES  ('ANDRIA', 'Nancy', 'nancyandriamahanintsoa@gmail.com', '1d78b370ad96e7a8091888d902360187bdea87ab6a4af003ec63c791894513ec', 0), -- admin
+                    ('RABARI', 'Anne', 'anne@gmail.com', '90b8de4051f02b7a29484341f3a903e1b2c6a233f5465e19c634535c7b315e6f', 10), -- artisan
+                    ('RAKOTO', 'Angoty', 'angotyrabarijaona@gmail.com', 'f81e4397ad22ae6559bc92aef92db281a5218cce97bf40818a63902a81c11319', 20); -- client
 
 INSERT INTO Categorie(intitule, etat) 
             VALUES  ('Haingon-trano sy zava-kanto', 1), ('Poketra', 1), ('Rojo sy ravaka', 1), ('Sary sokitra', 1);

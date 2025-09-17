@@ -8,7 +8,7 @@ public class Connect {
 
     public static Connection connectDB() throws Exception {
         Class.forName("org.postgresql.Driver");
-        Connection con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/artizana", "postgres", "nancy");
+        Connection con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/artizana", "postgres", "mdpprom15");
         System.out.println(con);
         return con;
     }
