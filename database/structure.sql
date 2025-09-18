@@ -1,5 +1,5 @@
-CREATE DATABASE artizana;
-\c artizana;
+-- CREATE DATABASE artizana;
+-- \c artizana;
 
 CREATE TABLE Utilisateur(
     id_utilisateur SERIAL PRIMARY KEY,
