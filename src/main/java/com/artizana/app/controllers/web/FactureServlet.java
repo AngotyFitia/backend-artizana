@@ -1,6 +1,7 @@
 package com.artizana.app.controllers.web;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,6 +13,7 @@ import com.artizana.app.models.Utilisateur;
 
 import jakarta.servlet.http.HttpSession;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @Controller
 @RequestMapping("/api/web")
 public class FactureServlet {

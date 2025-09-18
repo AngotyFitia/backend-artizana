@@ -19,8 +19,7 @@ import java.util.Collections;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
-
-@CrossOrigin(origins = "http://localhost:8100", allowCredentials = "true")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 public class AuthController {
     Utilisateur utilisateur = new Utilisateur();
@@ -52,11 +51,12 @@ public class AuthController {
     }
 
     @PostMapping("/login-mobile")
-    public ResponseEntity<?> loginMobile(@RequestParam("email") String email, @RequestParam("password") String password, HttpSession session) {
+    public ResponseEntity<?> loginMobile(@RequestParam("email") String email, @RequestParam("password") String password,
+            HttpSession session) {
         try {
             Utilisateur user = utilisateur.getUtilisateurByemailPassword(email, password, null);
 
-            if (user != null && user.getEtat()==20) {
+            if (user != null && user.getEtat() == 20) {
                 session.setAttribute("utilisateur", user);
                 return ResponseEntity.ok(user); // Retourne les infos utilisateur au front
             } else {

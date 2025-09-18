@@ -4,6 +4,7 @@ import com.artizana.app.models.Facture;
 import com.artizana.app.models.Produit;
 import com.artizana.app.models.Connect;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class DashBoardController {
 
     @GetMapping("/dashboard/factures")
